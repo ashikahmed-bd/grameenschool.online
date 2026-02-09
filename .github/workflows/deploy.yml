@@ -24,6 +24,7 @@ jobs:
       - name: Build Vue app
         run: npm run build
 
+      # Clear old files including any nested 'dist'
       - name: Clear old files on VPS
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -31,9 +32,9 @@ jobs:
           username: 'root'
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
-          script: |
-            rm -rf /var/www/grameenschool.online/*
+          script: rm -rf /var/www/grameenschool.online/*
 
+      # Upload **all contents** of dist including hidden files
       - name: Upload Vue build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -41,9 +42,10 @@ jobs:
           username: 'root'
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
-          source: dist/
+          source: dist/*
           target: /var/www/grameenschool.online/
 
+      # Set permissions & reload Nginx
       - name: Set permissions and reload Nginx
         uses: appleboy/ssh-action@v0.1.6
         with:
