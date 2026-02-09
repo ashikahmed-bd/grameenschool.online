@@ -41,8 +41,8 @@ jobs:
           username: 'root'
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
-          source: 'dist/'
-          target: '/var/www/grameenschool.online/'
+          source: dist/
+          target: /var/www/grameenschool.online/
 
       - name: Set permissions and reload Nginx
         uses: appleboy/ssh-action@v0.1.6
