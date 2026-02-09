@@ -1,0 +1,39 @@
+name: Deploy Vue to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vue app
+        run: npm run build
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: '5.223.73.76'
+          username: 'root'
+          key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGu9LGHpd9Pq0mPGaIlupNHHuixcAF9B/Kgg3hMaDzc T github-actions'
+          port: 22
+          script: |
+            rm -rf /var/www/grameenschool.online/*
+            cp -r dist/* /var/www/grameenschool.online/
+            chown -R www-data:www-data /var/www/grameenschool.online
+            chmod -R 755 /var/www/grameenschool.online
+            sudo systemctl reload nginx
