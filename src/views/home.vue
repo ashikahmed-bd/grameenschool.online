@@ -1,28 +1,26 @@
 <script setup>
-import Default from "@/layouts/Default.vue";
-import { useAppStore } from "@/stores/app";
-import { onMounted } from "vue";
-import { storeToRefs } from "pinia";
-import IconGroup from "@/components/icons/IconGroup.vue";
+import Default from '@/layouts/Default.vue'
+import { useAppStore } from '@/stores/app'
+import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import IconGroup from '@/components/icons/IconGroup.vue'
 
-const appStore = useAppStore();
-const { home } = storeToRefs(appStore);
+const appStore = useAppStore()
+const { home } = storeToRefs(appStore)
 
 const loadDashboard = async () => {
-  await appStore.dashboard();
+  await appStore.dashboard()
 }
 
 const clearTokens = async () => {
   if (confirm('Are you sure you went to clear authenticate tokens? ')) {
-    await appStore.ClearAllToken();
+    await appStore.ClearAllToken()
   }
 }
 
-
 onMounted(() => {
-  loadDashboard();
+  loadDashboard()
 })
-
 </script>
 
 <template>
@@ -58,7 +56,9 @@ onMounted(() => {
           </div>
           <div>
             <h6 class="text-gray-600 text-sm font-medium">Total Published</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">{{ home.stats?.total_published }}</p>
+            <p class="text-3xl font-semibold text-gray-900 mt-1">
+              {{ home.stats?.total_published }}
+            </p>
           </div>
         </div>
 
@@ -69,7 +69,9 @@ onMounted(() => {
           </div>
           <div>
             <h6 class="text-gray-600 text-sm font-medium">Total Archived</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">{{ home.stats?.total_archived }}</p>
+            <p class="text-3xl font-semibold text-gray-900 mt-1">
+              {{ home.stats?.total_archived }}
+            </p>
           </div>
         </div>
 
@@ -80,7 +82,9 @@ onMounted(() => {
           </div>
           <div>
             <h6 class="text-gray-600 text-sm font-medium">Total Student</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">{{ home.stats?.total_students }}</p>
+            <p class="text-3xl font-semibold text-gray-900 mt-1">
+              {{ home.stats?.total_students }}
+            </p>
           </div>
         </div>
 
@@ -91,7 +95,9 @@ onMounted(() => {
           </div>
           <div>
             <h6 class="text-gray-600 text-sm font-medium">Total Enrolled</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">{{ home.stats?.total_enrolled }}</p>
+            <p class="text-3xl font-semibold text-gray-900 mt-1">
+              {{ home.stats?.total_enrolled }}
+            </p>
           </div>
         </div>
 
@@ -119,7 +125,6 @@ onMounted(() => {
       </div>
     </section>
 
-
     <section class="">
       <div class="card">
         <div class="card__header">
@@ -144,8 +149,11 @@ onMounted(() => {
                 <tr v-for="order in home.recent_orders" :key="order.id">
                   <td>
                     <div class="flex items-center">
-                      <img :src="order.user.avatar_url" :alt="order.user.name"
-                        class="w-12 h-12 rounded-full border object-cover" />
+                      <img
+                        :src="order.user.avatar_url"
+                        :alt="order.user.name"
+                        class="w-12 h-12 rounded-full border object-cover"
+                      />
                       <div class="ml-4">
                         <div class="font-medium text-gray-800">{{ order.user.name }}</div>
                         <div class="text-xs text-gray-500">{{ order.user.phone }}</div>
@@ -158,7 +166,10 @@ onMounted(() => {
                   <td>{{ order.total_formatted }}</td>
                   <td>{{ order.status }}</td>
                   <td>
-                    <RouterLink :to="{ name: 'orders.view', params: { id: order.id } }" class="badge badge__info">View
+                    <RouterLink
+                      :to="{ name: 'orders.view', params: { id: order.id } }"
+                      class="badge badge__info"
+                      >View
                     </RouterLink>
                   </td>
                 </tr>
@@ -168,7 +179,6 @@ onMounted(() => {
         </div>
       </div>
     </section>
-
 
     <section class="">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -191,15 +201,21 @@ onMounted(() => {
                   <tr v-for="course in home.top_courses" :key="course.id">
                     <td>
                       <div class="flex items-center gap-3">
-                        <img :src="course.cover_url" :alt="course.title"
-                          class="object-cover h-12 w-auto rounded-md border" />
+                        <img
+                          :src="course.cover_url"
+                          :alt="course.title"
+                          class="object-cover h-12 w-auto rounded-md border"
+                        />
                         <div>
-                          <h6 class="font-semibold whitespace-pre-wrap text-gray-800">{{ course.title }}
+                          <h6 class="font-semibold whitespace-pre-wrap text-gray-800">
+                            {{ course.title }}
                           </h6>
                           <span v-if="course.price > 0">
                             {{ course.price_formatted }}
-                            <span v-if="course.price < course.base_price"
-                              class="text-sm text-gray-500 line-through ml-1">
+                            <span
+                              v-if="course.price < course.base_price"
+                              class="text-sm text-gray-500 line-through ml-1"
+                            >
                               {{ course.base_price_formatted }}
                             </span>
                           </span>
@@ -217,11 +233,18 @@ onMounted(() => {
 
                     <td>
                       <div class="flex items-center gap-1 text-yellow-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-yellow-400" viewBox="0 0 20 20">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="w-4 h-4 fill-yellow-400"
+                          viewBox="0 0 20 20"
+                        >
                           <path
-                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.148 3.543a1 1 0 00.95.69h3.708c.969 0 1.371 1.24.588 1.81l-3 2.18a1 1 0 00-.364 1.118l1.148 3.543c.3.921-.755 1.688-1.54 1.118L10 13.347l-3.49 2.54c-.784.57-1.838-.197-1.539-1.118l1.148-3.543a1 1 0 00-.364-1.118l-3-2.18c-.783-.57-.38-1.81.588-1.81h3.708a1 1 0 00.95-.69l1.148-3.543z" />
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.148 3.543a1 1 0 00.95.69h3.708c.969 0 1.371 1.24.588 1.81l-3 2.18a1 1 0 00-.364 1.118l1.148 3.543c.3.921-.755 1.688-1.54 1.118L10 13.347l-3.49 2.54c-.784.57-1.838-.197-1.539-1.118l1.148-3.543a1 1 0 00-.364-1.118l-3-2.18c-.783-.57-.38-1.81.588-1.81h3.708a1 1 0 00.95-.69l1.148-3.543z"
+                          />
                         </svg>
-                        {{ course.average_rating?.toFixed(1) ?? 'N/A' }} ({{ course.enrollments_count }})
+                        {{ course.average_rating?.toFixed(1) ?? 'N/A' }} ({{
+                          course.enrollments_count
+                        }})
                       </div>
                     </td>
                   </tr>
@@ -240,24 +263,17 @@ onMounted(() => {
               <table>
                 <thead>
                   <tr>
-                    <th>User</th>
-                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Phone</th>
                     <th>Joined</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="user in home.latest_users" :key="user.id">
                     <td>
-                      <div class="flex items-center ">
-                        <img :src="user.avatar_url" :alt="user.name"
-                          class="w-12 h-12 rounded-full border object-cover" />
-                        <div class="ml-4">
-                          <div class="font-medium text-gray-800">{{ user.name }}</div>
-                          <div class="text-xs text-gray-500">{{ user.phone }}</div>
-                        </div>
-                      </div>
+                      {{ user.name }}
                     </td>
-                    <td>{{ user.email ?? 'N/A' }}</td>
+                    <td>{{ user.phone ?? '' }}</td>
                     <td>{{ user.created_at.human }}</td>
                   </tr>
                 </tbody>
@@ -284,7 +300,7 @@ onMounted(() => {
                   <th>Role</th>
                   <th>Ip Address</th>
                   <th>Browser</th>
-                  <th>Last Used </th>
+                  <th>Last Used</th>
                 </tr>
               </thead>
               <tbody>
@@ -292,8 +308,10 @@ onMounted(() => {
                   <td>{{ log.name }}</td>
                   <td>{{ log.phone }}</td>
                   <td>
-                    <span class="bg-gray-900 text-white text-xs capitalize px-2 py-0.5 rounded-full">{{ log.role
-                    }}</span>
+                    <span
+                      class="bg-gray-900 text-white text-xs capitalize px-2 py-0.5 rounded-full"
+                      >{{ log.role }}</span
+                    >
                   </td>
                   <td>{{ log.ip }}</td>
                   <td>{{ log.user_agent }}</td>
@@ -306,7 +324,6 @@ onMounted(() => {
       </div>
     </section>
   </Default>
-
 </template>
 
 <style scoped></style>

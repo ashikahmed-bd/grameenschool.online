@@ -79,9 +79,9 @@ onMounted(() => {
           <IconFlim class="size-5" />
           <span class="ml-3">Courses</span>
         </RouterLink>
-        <RouterLink :to="{ name: 'bundles' }" class="nav__item">
+        <RouterLink :to="{ name: 'collections' }" class="nav__item">
           <IconBundle class="size-5" />
-          <span class="ml-3">Bundles</span>
+          <span class="ml-3">Collections</span>
         </RouterLink>
         <RouterLink :to="{ name: 'meets' }" class="nav__item">
           <IconTv class="size-5" />

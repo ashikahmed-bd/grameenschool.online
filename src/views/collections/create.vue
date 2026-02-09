@@ -7,13 +7,13 @@ import BaseTextarea from '@/components/BaseTextarea.vue'
 import Default from '@/layouts/Default.vue'
 import { storeToRefs } from 'pinia'
 import { reactive } from 'vue'
-import { useBundleStore } from '@/stores/collection'
+import { useCollectionStore } from '@/stores/collection'
 import { useCategoryStore } from '@/stores/categories.js'
 
 const categoryStore = useCategoryStore()
 const { categories } = storeToRefs(categoryStore)
-const bundleStore = useBundleStore()
-const { errors } = storeToRefs(bundleStore)
+const collectionStore = useCollectionStore()
+const { errors } = storeToRefs(collectionStore)
 
 const form = reactive({
   title: '',
@@ -39,7 +39,7 @@ const submit = async () => {
   }
   formData.append('status', form.status)
 
-  await bundleStore.store(formData)
+  await collectionStore.store(formData)
 }
 </script>
 
@@ -47,8 +47,8 @@ const submit = async () => {
   <Default>
     <div class="card">
       <div class="card__header">
-        <h3 class="card__title">Add Bundle</h3>
-        <RouterLink :to="{ name: 'bundles' }" class="card__link">All Bundles</RouterLink>
+        <h3 class="card__title">Add Collection</h3>
+        <RouterLink :to="{ name: 'collections' }" class="card__link">All Collection</RouterLink>
       </div>
 
       <div class="card__body">
@@ -101,7 +101,7 @@ const submit = async () => {
               />
             </div>
 
-            <BaseButton :loading="bundleStore.loading">Submit</BaseButton>
+            <BaseButton :loading="collectionStore.loading">Submit</BaseButton>
           </form>
         </div>
       </div>

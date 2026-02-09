@@ -13,20 +13,20 @@ import BaseTextarea from '@/components/BaseTextarea.vue'
 import BaseSelect from '@/components/BaseSelect.vue'
 import QuillEditor from '@/components/QuillEditor.vue'
 import { useInstructorStore } from '@/stores/instructor'
-import { useBundleStore } from '@/stores/collection'
+import { useCollectionStore } from '@/stores/collection'
 
 const router = useRouter()
 const categoryStore = useCategoryStore()
 const courseStore = useCourseStore()
 const instructorStore = useInstructorStore()
-const bundleStore = useBundleStore()
+const collectionStore = useCollectionStore()
 
 const { errors } = storeToRefs(courseStore)
 
 const categories = ref([])
 const selectedCategory = ref('')
 const instructorsItems = ref([])
-const bundles = ref([])
+const collections = ref([])
 
 // Reactive course form
 const form = reactive({
@@ -97,9 +97,9 @@ const loadInstructor = async () => {
   instructorsItems.value = response.data
 }
 
-const loadBundles = async () => {
-  const response = await bundleStore.search()
-  bundles.value = response.data
+const loadCollections = async () => {
+  const response = await collectionStore.search()
+  collections.value = response.data
 }
 
 const loadCategories = async () => {

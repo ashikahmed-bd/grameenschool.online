@@ -7,16 +7,16 @@ import BaseTextarea from '@/components/BaseTextarea.vue'
 import Default from '@/layouts/Default.vue'
 import { storeToRefs } from 'pinia'
 import { onMounted, reactive, ref } from 'vue'
-import { useBundleStore } from '@/stores/collection'
+import { useCollectionStore } from '@/stores/collection'
 import { useRoute } from 'vue-router'
 
-const bundleStore = useBundleStore()
-const { errors } = storeToRefs(bundleStore)
+const collectionStore = useCollectionStore()
+const { errors } = storeToRefs(collectionStore)
 
 const route = useRoute()
 
 // ================== STATE ==================
-const bundle = ref({})
+const collection = ref({})
 
 // === Reactive form ===
 const form = reactive({
@@ -31,9 +31,9 @@ const form = reactive({
 })
 
 // === LOAD EXISTING BUNDLE ===
-const loadBundle = async () => {
-  const response = await bundleStore.show(route.params.id)
-  bundle.value = response.data
+const loadCollection = async () => {
+  const response = await collectionStore.show(route.params.id)
+  collection.value = response.data
 
   form.title = response.data.title
   form.slug = response.data.slug
@@ -58,18 +58,18 @@ const submit = async () => {
   }
   formData.append('status', form.status)
 
-  await bundleStore.update(route.params.id, formData)
+  await collectionStore.update(route.params.id, formData)
 }
 
-const removeCourseFromBundle = async (course) => {
-  if (confirm('Are you sure you went Course removed from bundle?')) {
-    await bundleStore.removeCourse(route.params.id, course)
+const removeCourseFromCollection = async (course) => {
+  if (confirm('Are you sure you went Course removed from collection?')) {
+    await collectionStore.removeCourse(route.params.id, course)
   }
 }
 
 // ==== MOUNT ===
 onMounted(async () => {
-  await loadBundle()
+  await loadCollection()
 })
 </script>
 
@@ -77,8 +77,8 @@ onMounted(async () => {
   <Default>
     <div class="card">
       <div class="card__header">
-        <h3 class="card__title">Update Bundle</h3>
-        <RouterLink :to="{ name: 'bundles' }" class="card__link"> All Bundles </RouterLink>
+        <h3 class="card__title">Update Collection</h3>
+        <RouterLink :to="{ name: 'collections' }" class="card__link"> All Collections </RouterLink>
       </div>
 
       <div class="card__body">
@@ -115,8 +115,8 @@ onMounted(async () => {
                   :error="errors.banner"
                 />
                 <img
-                  v-if="bundle.banner_url"
-                  :src="bundle.banner_url"
+                  v-if="collection?.banner_url"
+                  :src="collection?.banner_url"
                   alt="Cover"
                   class="size-16 rounded"
                 />
@@ -129,8 +129,8 @@ onMounted(async () => {
                   :error="errors.icon"
                 />
                 <img
-                  v-if="bundle.icon_url"
-                  :src="bundle.icon_url"
+                  v-if="collection.icon_url"
+                  :src="collection.icon_url"
                   alt="Cover"
                   class="size-16 rounded"
                 />
@@ -148,17 +148,17 @@ onMounted(async () => {
               />
             </div>
 
-            <BaseButton :loading="bundleStore.loading">Update</BaseButton>
+            <BaseButton :loading="collectionStore.loading">Update</BaseButton>
           </form>
 
-          <!-- load bundle Courses -->
+          <!-- load Collection Courses -->
           <div class="card__body space-y-4">
             <div class="grid grid-cols-2 gap-4">
-              <article v-for="course in bundle.courses" :key="course.id" class="relative">
+              <article v-for="course in collection.courses" :key="course.id" class="relative">
                 <img :src="course.cover_url" class="w-full h-auto rounded" />
                 <button
                   type="button"
-                  @click="removeCourseFromBundle(course.id)"
+                  @click="removeCourseFromCollection(course.id)"
                   class="absolute -top-2 -right-2 text-white cursor-pointer"
                 >
                   <svg

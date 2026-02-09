@@ -97,31 +97,31 @@ const router = createRouter({
     },
 
     {
-      path: '/bundles',
-      name: 'bundles',
-      component: () => import('../views/bundles/index.vue'),
+      path: '/collections',
+      name: 'collections',
+      component: () => import('../views/collections/index.vue'),
       meta: {
-        title: 'Bundles',
+        title: 'Collections',
         auth: true,
       },
     },
 
     {
-      path: '/bundle/create',
-      name: 'bundle.create',
-      component: () => import('../views/bundles/create.vue'),
+      path: '/collection/create',
+      name: 'collection.create',
+      component: () => import('../views/collections/create.vue'),
       meta: {
-        title: 'Bundles Create',
+        title: 'Collections Create',
         auth: true,
       },
     },
 
     {
-      path: '/bundle/:id',
-      name: 'bundle.edit',
-      component: () => import('../views/bundles/update.vue'),
+      path: '/collection/:id',
+      name: 'collection.edit',
+      component: () => import('../views/collections/update.vue'),
       meta: {
-        title: 'Bundles Update',
+        title: 'Collections Update',
         auth: true,
       },
     },
