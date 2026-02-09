@@ -31,9 +31,17 @@ jobs:
           username: 'root'
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
+          source: 'dist/*'
+          target: '/var/www/grameenschool.online/'
+
+      - name: Set permissions and reload Nginx
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: '5.223.73.76'
+          username: 'root'
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
           script: |
-            rm -rf /var/www/grameenschool.online/*
-            cp -r dist/* /var/www/grameenschool.online/
             chown -R www-data:www-data /var/www/grameenschool.online
             chmod -R 755 /var/www/grameenschool.online
             sudo systemctl reload nginx
