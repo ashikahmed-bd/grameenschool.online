@@ -29,7 +29,7 @@ jobs:
         with:
           host: '5.223.73.76'
           username: 'root'
-          key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGu9LGHpd9Pq0mPGaIlupNHHuixcAF9B/Kgg3hMaDzc T github-actions'
+          key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           script: |
             rm -rf /var/www/grameenschool.online/*
