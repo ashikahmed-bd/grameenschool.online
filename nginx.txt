@@ -1,0 +1,60 @@
+ls -l /etc/nginx/sites-enabled/
+
+# Redirect all HTTP traffic to HTTPS
+server {
+    listen 80;
+    server_name grameenschool.online www.grameenschool.online;
+    return 301 https://$host$request_uri;
+}
+
+# HTTPS server
+server {
+    listen 443 ssl http2;
+    server_name grameenschool.online www.grameenschool.online;
+
+    root /var/www/grameenschool.online;   # Vue build folder
+    index index.html;
+
+    # SSL Certificates from Let's Encrypt
+    ssl_certificate /etc/letsencrypt/live/grameenschool.online/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/grameenschool.online/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # Security headers (optional but recommended)
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" always;
+
+    # Gzip compression
+    gzip on;
+    gzip_disable "msie6";
+    gzip_vary on;
+    gzip_min_length 256;
+    gzip_proxied any;
+    gzip_comp_level 5;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml application/xml application/xml+rss;
+
+    # Vue SPA routing
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    # Vue SPA routing
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Block access to hidden files except .well-known (for Let's Encrypt)
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # Optional: cache static assets
+    location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg)$ {
+        expires 1M;
+        access_log off;
+        add_header Cache-Control "public";
+    }
+}
+
