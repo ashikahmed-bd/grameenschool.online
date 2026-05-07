@@ -1,9 +1,7 @@
 <script setup>
 import Default from '@/layouts/Default.vue'
 import DataTableSkeleton from '@/components/DataTableSkeleton.vue'
-import IconQuestion from '@/components/icons/IconQuestion.vue'
 import IconPlay from '@/components/icons/IconPlay.vue'
-import IconStar from '@/components/icons/IconStar.vue'
 import IconGroup from '@/components/icons/IconGroup.vue'
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -39,60 +37,6 @@ onMounted(() => {
 
 <template>
   <Default>
-    <section>
-      <div v-if="courses && courses.data" class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <!-- Draft -->
-        <div class="bg-white rounded-xl p-5 transition flex items-center gap-4 cursor-pointer">
-          <div class="bg-white rounded-full">
-            <img src="/icons/draft.png" alt="draft icon" class="h-16 w-16 object-contain" />
-          </div>
-          <div>
-            <h6 class="text-gray-700 text-sm font-medium">Total Draft</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">{{ courses?.total_draft ?? 0 }}</p>
-          </div>
-        </div>
-
-        <!-- Pending -->
-        <div class="bg-white rounded-xl p-5 transition flex items-center gap-4 cursor-pointer">
-          <div class="bg-white rounded-full">
-            <img src="/icons/pending.png" alt="pending" class="h-16 w-16 object-contain" />
-          </div>
-          <div>
-            <h6 class="text-gray-600 text-sm font-medium">Total Pending</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">
-              {{ courses?.total_pending ?? 0 }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Published -->
-        <div class="bg-white rounded-xl p-5 transition flex items-center gap-4 cursor-pointer">
-          <div class="bg-white rounded-full">
-            <img src="/icons/published.png" alt="published" class="h-16 w-16 object-contain" />
-          </div>
-          <div>
-            <h6 class="text-gray-600 text-sm font-medium">Total Published</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">
-              {{ courses?.total_published ?? 0 }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Archived -->
-        <div class="bg-white rounded-xl p-5 transition flex items-center gap-4 cursor-pointer">
-          <div class="bg-white rounded-full">
-            <img src="/icons/archived.png" alt="archived" class="h-16 w-16 object-contain" />
-          </div>
-          <div>
-            <h6 class="text-gray-600 text-sm font-medium">Total Archived</h6>
-            <p class="text-3xl font-semibold text-gray-900 mt-1">
-              {{ courses?.total_archived ?? 0 }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="py-4">
       <div class="card">
         <div class="card__header">
@@ -109,8 +53,7 @@ onMounted(() => {
                     <th>Course</th>
                     <th>Price</th>
                     <th>Featured</th>
-                    <th>Enrollments</th>
-                    <th>Ratings</th>
+                    <th>Students</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -121,11 +64,11 @@ onMounted(() => {
                       <div class="flex items-center gap-2">
                         <img
                           :src="course.cover_url"
-                          alt=""
+                          :alt="course.name"
                           class="h-12 w-auto object-cover rounded"
                         />
-                        <div>
-                          <h6 class="font-medium text-dark">
+                        <div class="max-w-3xs">
+                          <h6 class="font-medium text-dark truncate">
                             {{ course.title }}
                           </h6>
                           <div class="flex flex-wrap">
@@ -137,7 +80,7 @@ onMounted(() => {
                             <span
                               class="font-normal after:content-['•'] last:after:content-none flex items-center"
                             >
-                              <IconClock class="size-4 mr-1" /> {{ course.duration_formatted }}
+                              <IconClock class="size-4 mr-1" /> {{ course.stats?.total_hrs }}
                             </span>
                           </div>
                         </div>
@@ -163,18 +106,10 @@ onMounted(() => {
                     <td>
                       <div class="flex items-center gap-2">
                         <IconGroup class="size-5" />
-                        <span class="font-normal">{{ course.enrollments_count }}</span>
+                        <span class="font-normal">{{ course.students_count }}</span>
                       </div>
                     </td>
 
-                    <td>
-                      <div class="flex items-center gap-1 text-yellow-500 text-sm">
-                        <IconStar class="size-5" />
-                        <span class="text-gray-700"
-                          >{{ course.average_rating }} ({{ course.reviews_count }})</span
-                        >
-                      </div>
-                    </td>
                     <td>
                       <span
                         class="capitalize text-xs bg-green-100 text-green-800 px-2 py-1 rounded"

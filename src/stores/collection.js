@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 
 const toastStore = useToastStore()
 
@@ -16,7 +16,7 @@ export const useCollectionStore = defineStore('collection', {
   actions: {
     async all() {
       try {
-        const response = await axiosInstance.get('/api/v1/collections')
+        const response = await apiClient.get('/api/v1/collections')
         if (response.status === 200) {
           this.collections = response.data
           return Promise.resolve(response.data)
@@ -34,7 +34,7 @@ export const useCollectionStore = defineStore('collection', {
     async store(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/collections', formData)
+        const response = await apiClient.post('/api/v1/collections', formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -51,7 +51,7 @@ export const useCollectionStore = defineStore('collection', {
 
     async show(collection) {
       try {
-        const response = await axiosInstance.get(`/api/v1/collections/${collection}`)
+        const response = await apiClient.get(`/api/v1/collections/${collection}`)
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -66,7 +66,7 @@ export const useCollectionStore = defineStore('collection', {
     async update(collection, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(`/api/v1/collections/${collection}`, formData)
+        const response = await apiClient.post(`/api/v1/collections/${collection}`, formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -83,7 +83,7 @@ export const useCollectionStore = defineStore('collection', {
 
     async delete(collection) {
       try {
-        const response = await axiosInstance.delete(`/api/v1/collections/${collection}`)
+        const response = await apiClient.delete(`/api/v1/collections/${collection}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)

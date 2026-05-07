@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useContactStore = defineStore('contact', {
@@ -16,7 +16,7 @@ export const useContactStore = defineStore('contact', {
   actions: {
     async all(page) {
       try {
-        const response = await axiosInstance.get('/api/contacts', {
+        const response = await apiClient.get('/api/contacts', {
           params: {
             page: page,
           },
@@ -35,7 +35,7 @@ export const useContactStore = defineStore('contact', {
 
     async show(contact) {
       try {
-        const response = await axiosInstance.get(`/api/contact/${contact}`)
+        const response = await apiClient.get(`/api/contact/${contact}`)
         if (response.status === 200) {
           this.contact = response.data.data
           return Promise.resolve(response.data)
@@ -51,7 +51,7 @@ export const useContactStore = defineStore('contact', {
     async update(contact, router) {
       this.loading = true
       try {
-        const response = await axiosInstance.put(`/api/contact/${contact.id}`, {
+        const response = await apiClient.put(`/api/contact/${contact.id}`, {
           status: contact.status,
         })
         if (response.status === 200) {
@@ -71,7 +71,7 @@ export const useContactStore = defineStore('contact', {
 
     async delete(contact) {
       try {
-        const response = await axiosInstance.delete(`/api/contact/${contact}`)
+        const response = await apiClient.delete(`/api/contact/${contact}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)

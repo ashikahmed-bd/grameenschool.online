@@ -1,16 +1,21 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
+import { reactive, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useLectureStore } from '@/stores/lecture'
 
-import IconChevronRight from './icons/IconChevronRight.vue'
-import IconDelete from './icons/IconDelete.vue'
-import IconEdit from './icons/IconEdit.vue'
-import IconMove from './icons/IconMove.vue'
-import BaseArticleContent from './BaseArticleContent.vue'
-import BaseVideoContent from './BaseVideoContent.vue'
 import IconPlay from './icons/IconPlay.vue'
 import IconDocument from './icons/IconDocument.vue'
-import BaseContentType from './BaseContentType.vue'
+import IconCircleCheck from './icons/IconCircleCheck.vue'
+import IconCircle from './icons/IconCircle.vue'
+import IconDelete from './icons/IconDelete.vue'
+import IconEdit from './icons/IconEdit.vue'
+import IconChevronRight from './icons/IconChevronRight.vue'
+import BaseLectureContentForm from './BaseLectureContentForm.vue'
+import BaseArticleContent from './BaseArticleContent.vue'
+import BaseVideoContent from './BaseVideoContent.vue'
+
+const route = useRoute()
+const lectureStore = useLectureStore()
 
 const props = defineProps({
   lecture: {
@@ -19,132 +24,197 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['updated', 'deleted'])
+
 const expanded = ref(false)
-const isEditing = ref(false)
+const editing = ref(false)
+const showContentForm = ref(false)
+const loading = ref(false)
 
 const form = reactive({
-  title: props.lecture.title,
+  title: '',
 })
 
-function submit() {
-  isEditing.value = false
+const resetForm = () => {
+  form.title = props.lecture?.title || ''
 }
 
-function cancelEdit() {
-  isEditing.value = false
+const cancelForm = () => {
+  resetForm()
+  editing.value = false
+  expanded.value = false
 }
 
-function deleteLecture() {
-  console.log('delete lecture', props.lecture.id)
+const submit = async () => {
+  const title = form.title.trim()
+  if (!title || loading.value) return
+
+  try {
+    loading.value = true
+    await lectureStore.update(route.params.id, props.lecture.id, { title })
+    emit('updated')
+    cancelForm()
+  } catch (error) {
+    console.error('Lecture update failed:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const lectureDelete = async () => {
+  if (loading.value) return
+  if (!confirm('Are you sure you want to delete this lecture?')) return
+
+  try {
+    loading.value = true
+    await lectureStore.delete(route.params.id, props.lecture.id)
+    emit('deleted')
+  } catch (error) {
+    console.error('Lecture delete failed:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleContentSaved = () => {
+  showContentForm.value = false
+  emit('updated')
+}
+
+const closeExpanded = () => {
+  showContentForm.value = false
+}
+
+watch(
+  () => props.lecture,
+  () => {
+    resetForm()
+  },
+  { immediate: true, deep: true },
+)
+
+const openContentForm = () => {
+  showContentForm.value = true
 }
 </script>
 
 <template>
-  <Disclosure v-model="expanded">
-    <div class="border border-slate-200 bg-white rounded">
-      <!-- ================= EDIT MODE ================= -->
-      <div v-if="isEditing" class="p-4">
-        <form @submit.prevent="submit">
-          <input
-            v-model="form.title"
-            class="w-full border border-slate-200 px-3 py-2 rounded"
-            placeholder="Lecture title"
-          />
-          <div class="mt-4 flex justify-end gap-2">
-            <button type="button" @click="cancelEdit" class="border px-4 py-2 rounded">
-              Cancel
-            </button>
-            <button type="submit" class="bg-black text-white px-4 py-2 rounded">
-              Save lecture
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- ================= HEADER ================= -->
-      <DisclosureButton
-        v-else
-        class="group w-full flex items-center justify-between px-4 py-2 text-left"
-      >
-        <div class="flex items-center gap-2 text-sm">
-          <!-- lecture status -->
-          <svg
-            v-if="lecture.has_content"
-            class="w-5 h-5 text-green-600"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <svg
-            v-else
-            class="w-5 h-5 text-gray-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-
-          <span class="font-medium"> Lecture {{ lecture.sort_order }}: </span>
-          <span class="text-slate-600">{{ lecture.type === 'video' ? '▶' : '📄' }}</span>
-          <span>{{ lecture.title }}</span>
+  <div class="rounded-xl border border-slate-200 bg-white transition">
+    <div class="group flex items-center justify-between px-4 py-2">
+      <div class="flex min-w-0 items-center gap-3">
+        <div class="shrink-0">
+          <IconCircleCheck v-if="lecture.has_content" class="size-5 text-green-600" />
+          <IconCircle v-else class="size-5 text-slate-400" />
         </div>
 
-        <div class="flex items-center gap-3">
-          <!-- hover actions -->
-          <div
-            class="flex items-center gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        <div
+          class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"
+        >
+          <IconPlay v-if="lecture.type === 'video'" class="size-4" />
+          <IconDocument v-else class="size-4" />
+        </div>
+
+        <div class="min-w-0">
+          <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+            Lecture: {{ lecture.sort_order }}
+          </p>
+          <h3 class="truncate text-sm font-semibold text-slate-800">
+            {{ lecture.title }}
+          </h3>
+        </div>
+      </div>
+
+      <div class="ml-4 flex shrink-0 items-center gap-2">
+        <div
+          class="flex items-center gap-1 opacity-0 transition-all duration-200 group-hover:opacity-100"
+          @click.stop
+        >
+          <button
+            type="button"
+            @click="editing = !editing"
+            class="rounded p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
           >
-            <button @click.stop="deleteLecture" class="text-red-600">
-              <IconDelete class="w-5 h-5" />
-            </button>
-            <button @click.stop="isEditing = true" class="text-blue-600">
-              <IconEdit class="w-5 h-5" />
-            </button>
-            <button class="cursor-move">
-              <IconMove class="w-5 h-5" />
-            </button>
-          </div>
+            <IconEdit class="size-4" />
+          </button>
 
           <button
+            type="button"
+            @click="lectureDelete"
+            :disabled="loading"
+            class="rounded p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+          >
+            <IconDelete class="size-4" />
+          </button>
+          <button
             v-if="!lecture.has_content"
-            @click="expanded = !expanded"
-            class="border border-slate-400 px-2 py-1 text-xs rounded"
+            type="button"
+            @click="openContentForm"
+            class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
           >
             Add content
           </button>
-
-          <IconChevronRight
-            v-if="!isEditing"
-            class="w-5 h-5 transition-transform duration-300"
-            :class="expanded ? 'rotate-90' : ''"
-          />
         </div>
-      </DisclosureButton>
 
-      <!-- ================= CONTENT ================= -->
-      <DisclosurePanel class="border-t border-slate-200 p-4 space-y-3">
-        <!-- SELECT CONTENT TYPE -->
-        <template v-if="!lecture.has_content">
-          <BaseContentType :expanded="expanded" :lecture="lecture" />
-        </template>
-
-        <!-- ARTICLE CONTENT -->
-        <template v-else-if="lecture.type === 'text'">
-          <BaseArticleContent :lecture="lecture" />
-        </template>
-
-        <!-- VIDEO CONTENT -->
-        <template v-else-if="lecture.type === 'video'">
-          <BaseVideoContent :lecture="lecture" />
-        </template>
-      </DisclosurePanel>
+        <button
+          type="button"
+          class="rounded-lg p-1 text-slate-500 transition hover:bg-slate-100"
+          @click.stop="expanded = !expanded"
+        >
+          <IconChevronRight
+            class="size-5 transition duration-200"
+            :class="{ 'rotate-90': expanded }"
+          />
+        </button>
+      </div>
     </div>
-  </Disclosure>
+
+    <div v-if="editing" class="border-t border-slate-200 bg-white p-4">
+      <form @submit.prevent="submit" class="space-y-3">
+        <input
+          v-model="form.title"
+          type="text"
+          placeholder="Enter lecture title"
+          class="w-full rounded border border-gray-200 px-3 py-2 text-sm outline-none"
+        />
+
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            @click="cancelForm"
+            :disabled="loading"
+            class="rounded bg-gray-400 px-3 py-2 text-xs text-white disabled:opacity-50"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            :disabled="loading"
+            class="rounded bg-primary px-3 py-2 text-xs text-white disabled:opacity-50"
+          >
+            {{ loading ? 'Updating...' : 'Update' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <BaseLectureContentForm
+      v-if="showContentForm"
+      :lecture="lecture"
+      @saved="handleContentSaved"
+      @cancel="closeExpanded"
+    />
+
+    <div v-if="expanded" class="p-4">
+      <template v-if="lecture.type === 'text'">
+        <BaseArticleContent :lecture="lecture" />
+      </template>
+
+      <template v-else>
+        <BaseVideoContent :lecture="lecture" />
+      </template>
+    </div>
+  </div>
 </template>
+
+<style scoped></style>

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useSettingsStore = defineStore('settings', {
@@ -14,7 +14,7 @@ export const useSettingsStore = defineStore('settings', {
   actions: {
     async getGeneral() {
       try {
-        const response = await axiosInstance.get('api/v1/settings/general')
+        const response = await apiClient.get('api/v1/settings/general')
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -32,7 +32,7 @@ export const useSettingsStore = defineStore('settings', {
       const toastStore = useToastStore()
       this.loading = true
       try {
-        const response = await axiosInstance.put('api/v1/settings/general', formData)
+        const response = await apiClient.put('api/v1/settings/general', formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -49,7 +49,7 @@ export const useSettingsStore = defineStore('settings', {
 
     async getContact() {
       try {
-        const response = await axiosInstance.get('api/v1/settings/contact')
+        const response = await apiClient.get('api/v1/settings/contact')
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -67,7 +67,7 @@ export const useSettingsStore = defineStore('settings', {
       const toastStore = useToastStore()
       this.loading = true
       try {
-        const response = await axiosInstance.put('api/v1/settings/contact', formData)
+        const response = await apiClient.put('api/v1/settings/contact', formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -84,7 +84,7 @@ export const useSettingsStore = defineStore('settings', {
 
     async getSeo() {
       try {
-        const response = await axiosInstance.get('api/v1/settings/seo')
+        const response = await apiClient.get('api/v1/settings/seo')
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -102,7 +102,7 @@ export const useSettingsStore = defineStore('settings', {
       const toastStore = useToastStore()
       this.loading = true
       try {
-        const response = await axiosInstance.put('api/v1/settings/seo', formData)
+        const response = await apiClient.put('api/v1/settings/seo', formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -119,7 +119,7 @@ export const useSettingsStore = defineStore('settings', {
 
     async getPayment() {
       try {
-        const response = await axiosInstance.get('api/v1/settings/payment')
+        const response = await apiClient.get('api/v1/settings/payment')
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -137,7 +137,7 @@ export const useSettingsStore = defineStore('settings', {
       const toastStore = useToastStore()
       this.loading = true
       try {
-        const response = await axiosInstance.put('api/v1/settings/payment', formData)
+        const response = await apiClient.put('api/v1/settings/payment', formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -154,7 +154,7 @@ export const useSettingsStore = defineStore('settings', {
 
     async getSmsSettings() {
       try {
-        const response = await axiosInstance.get('api/v1/settings/sms')
+        const response = await apiClient.get('api/v1/settings/sms')
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -172,7 +172,7 @@ export const useSettingsStore = defineStore('settings', {
       const toastStore = useToastStore()
       this.loading = true
       try {
-        const response = await axiosInstance.put('api/v1/settings/sms', formData)
+        const response = await apiClient.put('api/v1/settings/sms', formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -189,7 +189,7 @@ export const useSettingsStore = defineStore('settings', {
 
     async getHomepage() {
       try {
-        const response = await axiosInstance.get('api/v1/settings/homepage')
+        const response = await apiClient.get('api/v1/settings/homepage')
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -204,7 +204,7 @@ export const useSettingsStore = defineStore('settings', {
     async updateHomepage(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.put('api/v1/settings/homepage', formData)
+        const response = await apiClient.put('api/v1/settings/homepage', formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)

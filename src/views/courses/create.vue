@@ -1,463 +1,213 @@
 <script setup>
-import Default from '@/layouts/Default.vue'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useCategoryStore } from '@/stores/categories.js'
-import { useCourseStore } from '@/stores/course.js'
-import IconClose from '@/components/icons/IconClose.vue'
-import IconPlus from '@/components/icons/IconPlus.vue'
 import BaseButton from '@/components/BaseButton.vue'
-import { useRouter } from 'vue-router'
 import BaseInput from '@/components/BaseInput.vue'
-import BaseTextarea from '@/components/BaseTextarea.vue'
 import BaseSelect from '@/components/BaseSelect.vue'
+import BaseTextarea from '@/components/BaseTextarea.vue'
+import ListCard from '@/components/ListCard.vue'
 import QuillEditor from '@/components/QuillEditor.vue'
-import { useInstructorStore } from '@/stores/instructor'
-import { useCollectionStore } from '@/stores/collection'
+import Default from '@/layouts/Default.vue'
+import { useCategoryStore } from '@/stores/categories'
+import { useCourseStore } from '@/stores/course'
+import { storeToRefs } from 'pinia'
+import { computed, onMounted, reactive, ref } from 'vue'
 
-const router = useRouter()
-const categoryStore = useCategoryStore()
-const courseStore = useCourseStore()
-const instructorStore = useInstructorStore()
-const collectionStore = useCollectionStore()
-
+const categoryStore = useCategoryStore();
+const courseStore = useCourseStore();
 const { errors } = storeToRefs(courseStore)
 
 const categories = ref([])
-const selectedCategory = ref('')
-const instructorsItems = ref([])
-const collections = ref([])
 
-// Reactive course form
+const newLearning = ref('')
+const newRequirement = ref('')
+const newInclude = ref('')
+
 const form = reactive({
   title: '',
   slug: '',
   overview: '',
+  description: '',
+
   meta_title: '',
   meta_description: '',
   meta_keywords: '',
+  canonical_url: '',
+
+  category_id: '',
+  subcategory_id: '',
   level: 'all',
   is_feature: false,
-  duration: '',
+  base_price: '',
   price: '',
-  description: '',
-  published_at: '',
-  cover: '',
-  video_id: '',
-  provider: 'youtube',
-  category_id: selectedCategory,
-  subcategory_id: '',
+  access_days: '',
+
   status: 'draft',
-  instructors: [],
   learnings: [],
   requirements: [],
-  features: [],
+  includes: [],
 })
-
-// Submit logic
-const submit = async () => {
-  await courseStore.store(form, router)
-}
-
-// Learnings, Requirements, Features
-const newLearning = ref('')
-const newRequirement = ref('')
-const newFeature = ref('')
-
-const addLearning = () => {
-  if (newLearning.value.trim()) {
-    form.learnings.push(newLearning.value.trim())
-    newLearning.value = ''
-  }
-}
-const removeLearning = (i) => {
-  form.learnings.splice(i, 1)
-}
-const addRequirement = () => {
-  if (newRequirement.value.trim()) {
-    form.requirements.push(newRequirement.value.trim())
-    newRequirement.value = ''
-  }
-}
-const removeRequirement = (i) => {
-  form.requirements.splice(i, 1)
-}
-const addFeature = () => {
-  if (newFeature.value.trim()) {
-    form.features.push(newFeature.value.trim())
-    newFeature.value = ''
-  }
-}
-const removeFeature = (i) => {
-  form.features.splice(i, 1)
-}
-
-const loadInstructor = async () => {
-  const response = await instructorStore.search('')
-  instructorsItems.value = response.data
-}
-
-const loadCollections = async () => {
-  const response = await collectionStore.search()
-  collections.value = response.data
-}
 
 const loadCategories = async () => {
   const response = await categoryStore.search()
   categories.value = response.data
 }
 
-// Subcategories computed
 const subcategories = computed(() => {
-  if (!form.category_id || !categories.value) return []
-  return categories.value.find((c) => c.id === form.category_id)?.children || []
+  if (!form.category_id) return []
+  return categories.value.find((category) => category.id === form.category_id)?.children
 })
 
+
+const submit = async () => {
+  await courseStore.store({
+    ...form,
+    learnings: [...form.learnings],
+    requirements: [...form.requirements],
+    includes: [...form.includes],
+  })
+}
+
+const addLearning = () => {
+  const value = newLearning.value.trim()
+  if (!value) return
+
+  form.learnings.push(value)
+  newLearning.value = ''
+}
+
+const removeLearning = (index) => {
+  form.learnings.splice(index, 1)
+}
+
+const addRequirement = () => {
+  const value = newRequirement.value.trim()
+  if (!value) return
+
+  form.requirements.push(value)
+  newRequirement.value = ''
+}
+
+const removeRequirement = (index) => {
+  form.requirements.splice(index, 1)
+}
+
+const addInclude = () => {
+  const value = newInclude.value.trim()
+  if (!value) return
+
+  form.includes.push(value)
+  newInclude.value = ''
+}
+
+const removeInclude = (index) => {
+  form.includes.splice(index, 1)
+}
+
 onMounted(() => {
-  loadCategories()
-  loadInstructor()
-  loadBundles()
+  loadCategories();
 })
 </script>
 
 <template>
   <Default>
-    <div class="card">
-      <div class="card__header">
-        <h3 class="card__title">Create New Course</h3>
-        <RouterLink :to="{ name: 'courses' }" class="base__button">All Courses</RouterLink>
+    <div class="space-y-6">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Create New Course</h1>
+          <p class="text-sm text-gray-500">
+            Add course details, pricing, SEO settings, and what’s included in this course.
+          </p>
+        </div>
       </div>
+      <form @submit.prevent="submit" class="grid gap-6 xl:grid-cols-[1fr_360px]">
+        <div class="space-y-6">
+          <section class="rounded-3xl bg-white p-6">
+            <h2 class="mb-5 text-lg font-bold text-gray-900">Basic Information</h2>
 
-      <div class="card__body">
-        <form @submit.prevent="submit">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Left -->
-            <div class="w-full md:col-span-2">
-              <div class="grid grid-cols-1 gap-4">
-                <div class="form__group">
-                  <label class="form__label">Title</label>
-                  <input
-                    type="text"
-                    v-model="form.title"
-                    class="form__control"
-                    placeholder="Learn English Spoken"
-                  />
-                </div>
+            <div class="grid gap-5">
+              <BaseInput label="Title" v-model="form.title" placeholder="Enter title" :required="true"
+                :error="errors.title" />
 
-                <div class="form__group">
-                  <label class="form__label">Slug</label>
-                  <input
-                    type="text"
-                    v-model="form.slug"
-                    class="form__control"
-                    placeholder="learn_english_spoken"
-                  />
-                </div>
+              <BaseInput label="Slug" v-model="form.slug" placeholder="Enter slug" :required="true"
+                :error="errors.slug" />
 
-                <div class="form__group">
-                  <label class="form__label">Overview</label>
-                  <textarea
-                    class="form__control"
-                    v-model="form.overview"
-                    placeholder="A short overview of the course"
-                  ></textarea>
-                </div>
+              <BaseTextarea label="Overview" v-model="form.overview" placeholder="Enter overview" :required="true"
+                :error="errors.overview" />
 
-                <BaseInput
-                  id="meta_title"
-                  label="Meta Title"
-                  v-model="form.meta_title"
-                  name="meta_title"
-                  placeholder="Enter meta title"
-                  :error="errors.meta_title"
-                  :required="true"
-                />
-
-                <BaseTextarea
-                  label="Meta Description"
-                  v-model="form.meta_description"
-                  placeholder="Enter meta description"
-                  :error="errors.meta_description"
-                  :required="true"
-                />
-
-                <BaseTextarea
-                  v-model="form.meta_keywords"
-                  label="Meta Keywords"
-                  placeholder="Write your note here..."
-                  :error="errors.meta_keywords"
-                />
-              </div>
-
-              <QuillEditor v-model="form.description" label="Description" />
-
-              <!-- Learnings & Requirements -->
-              <div class="grid grid-cols-2 gap-4">
-                <div class="form__group border border-border p-4 rounded-xl">
-                  <label class="form__label">What will students learn?</label>
-                  <div class="relative flex items-center">
-                    <input
-                      type="text"
-                      v-model="newLearning"
-                      @keydown.enter.prevent="addLearning"
-                      placeholder="Add learning & press Enter"
-                      class="form__control"
-                    />
-                    <button
-                      type="button"
-                      @click="addLearning"
-                      class="absolute right-0 top-0 bg-primary text-white cursor-pointer px-2 h-full rounded-r"
-                    >
-                      <IconPlus class="size-5" />
-                    </button>
-                  </div>
-                  <ul v-for="(item, index) in form.learnings" :key="index" class="mt-3">
-                    <li class="flex items-center justify-between gap-2">
-                      <span>{{ item }}</span>
-                      <button
-                        type="button"
-                        @click="removeLearning(index)"
-                        class="bg-primary text-white rounded cursor-pointer"
-                      >
-                        <IconClose class="size-4" />
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-
-                <div class="form__group space-y-4">
-                  <div class="border border-border p-4 rounded-xl">
-                    <label class="form__label">Requirements?</label>
-                    <div class="relative flex items-center">
-                      <input
-                        type="text"
-                        v-model="newRequirement"
-                        @keydown.enter.prevent="addRequirement"
-                        placeholder="Add requirement & press Enter"
-                        class="form__control"
-                      />
-                      <button
-                        type="button"
-                        @click="addRequirement"
-                        class="absolute right-0 top-0 bg-primary text-white cursor-pointer px-2 h-full rounded-r"
-                      >
-                        <IconPlus class="size-5" />
-                      </button>
-                    </div>
-                    <ul v-for="(item, index) in form.requirements" :key="index" class="mt-3">
-                      <li class="flex items-center justify-between gap-2">
-                        <span>{{ item }}</span>
-                        <button
-                          type="button"
-                          @click="removeRequirement(index)"
-                          class="bg-primary text-white rounded cursor-pointer"
-                        >
-                          <IconClose class="size-4" />
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div class="border border-border p-4 rounded-xl">
-                    <label class="form__label">Features ?</label>
-                    <div class="relative flex items-center">
-                      <input
-                        type="text"
-                        v-model="newFeature"
-                        @keydown.enter.prevent="addFeature"
-                        placeholder="Add feature & press Enter"
-                        class="form__control"
-                      />
-                      <button
-                        type="button"
-                        @click="addFeature"
-                        class="absolute right-0 top-0 bg-primary text-white cursor-pointer px-2 h-full rounded-r"
-                      >
-                        <IconPlus class="size-5" />
-                      </button>
-                    </div>
-                    <ul v-for="(item, index) in form.features" :key="index" class="mt-3">
-                      <li class="flex items-center justify-between gap-2">
-                        <span>{{ item }}</span>
-                        <button
-                          type="button"
-                          @click="removeFeature(index)"
-                          class="bg-primary text-white rounded cursor-pointer"
-                        >
-                          <IconClose class="size-4" />
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <QuillEditor label="Description" v-model="form.description" placeholder="Enter description"
+                :required="true" :error="errors.description" />
             </div>
+          </section>
 
-            <!-- Right -->
-            <div class="w-full">
-              <!-- Parent -->
-              <BaseSelect
-                v-model="form.category_id"
-                label="Parent"
-                :options="
-                  categories.map((category) => ({
-                    value: category.id,
-                    label: category.name,
-                  }))
-                "
-                placeholder="Choose Parent"
-                :error="errors.category_id"
-                required
-              />
+          <section class="rounded-3xl bg-white p-6">
+            <h2 class="mb-5 text-lg font-bold text-gray-900">SEO Settings</h2>
 
-              <!-- Children -->
-              <BaseSelect
-                v-model="form.subcategory_id"
-                label="Children"
-                :options="
-                  subcategories.map((item) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))
-                "
-                placeholder="Choose children"
-                :disabled="!form.category_id"
-                :error="errors.subcategory_id"
-                required
-              />
+            <div class="grid gap-5">
+              <BaseInput label="Meta Title" v-model="form.meta_title" placeholder="Enter meta title"
+                :error="errors.meta_title" />
 
-              <!-- Bundles -->
-              <BaseSelect
-                v-model="form.bundle_id"
-                label="Bundles"
-                :options="
-                  bundles.map((bundle) => ({
-                    value: bundle.id,
-                    label: bundle.title,
-                  }))
-                "
-                placeholder="Choose Bundle"
-                :error="errors.bundle_id"
-                required
-              />
+              <BaseTextarea label="Meta Description" v-model="form.meta_description"
+                placeholder="Enter meta description" :error="errors.meta_description" />
 
-              <BaseSelect
-                v-model="form.level"
-                for="level"
-                label="Level"
-                id="level"
-                name="level"
-                :options="[
-                  { value: 'all', label: 'All' },
-                  { value: 'beginner', label: 'Beginner' },
-                  { value: 'intermediate', label: 'Intermediate' },
-                  { value: 'advanced', label: 'Advanced' },
-                ]"
-                :error="errors.level"
-                :required="true"
-              />
+              <BaseTextarea label="Meta Keywords" v-model="form.meta_keywords" placeholder="Enter meta keywords"
+                :error="errors.meta_keywords" />
 
-              <div class="form__group">
-                <label class="form__label">Features</label>
-                <select v-model="form.is_feature" class="form__select w-full">
-                  <option :value="true">Yes</option>
-                  <option :value="false">No</option>
-                </select>
-              </div>
-
-              <BaseInput
-                type="number"
-                label="Duration in minutes"
-                v-model="form.duration"
-                placeholder="e.g. 650 minutes"
-                :error="errors.duration"
-                :required="true"
-              />
-
-              <BaseInput
-                type="number"
-                label="Price"
-                v-model="form.price"
-                placeholder="e.g. 1000"
-                :error="errors.price"
-                :required="true"
-              />
-
-              <div class="form__group">
-                <label class="form__label">Discount Type</label>
-                <select v-model="form.discount_type" class="form__select w-full">
-                  <option value="" disabled selected>Select Type</option>
-                  <option value="fixed">Fixed</option>
-                  <option value="percent">Percentage</option>
-                </select>
-              </div>
-
-              <BaseInput
-                type="number"
-                v-model="form.discount_amount"
-                label="Discount Amount"
-                placeholder="e.g. 500"
-                :error="errors.price"
-                required
-              />
-
-              <div class="form__group">
-                <label class="form__label">Discount Start</label>
-                <input
-                  type="date"
-                  v-model="form.discount_starts_at"
-                  class="form__control"
-                  required
-                />
-              </div>
-
-              <div class="form__group">
-                <label class="form__label">Discount End</label>
-                <input type="date" v-model="form.discount_ends_at" class="form__control" required />
-              </div>
-
-              <div class="form__group">
-                <label class="form__label">Intro Video ID</label>
-                <input
-                  type="text"
-                  v-model="form.video_id"
-                  class="form__control"
-                  placeholder="YouTube/Vimeo ID"
-                />
-              </div>
-              <div class="form__group">
-                <label class="form__label">Video Provider</label>
-                <select v-model="form.provider" class="form__select w-full">
-                  <option value="youtube">YouTube</option>
-                  <option value="vimeo">Vimeo</option>
-                </select>
-              </div>
-
-              <div class="form__group">
-                <label class="form__label">Status</label>
-                <select v-model="form.status" class="form__select w-full">
-                  <option value="draft">Draft</option>
-                  <option value="pending">Pending</option>
-                  <option value="published">Published</option>
-                </select>
-              </div>
-
-              <div class="form__group">
-                <label>Instructors</label>
-                <select v-model="form.instructors" multiple class="form__select w-full">
-                  <option v-for="item in instructorsItems || []" :key="item.id" :value="item.id">
-                    {{ item.user?.name }}
-                  </option>
-                </select>
-              </div>
+              <BaseInput label="Canonical URL" v-model="form.canonical_url" placeholder="Enter canonical url"
+                :error="errors.canonical_url" />
             </div>
-          </div>
+          </section>
 
-          <div class="form__group">
-            <BaseButton :loading="courseStore.loading">Submit</BaseButton>
+          <section class="rounded-3xl bg-white p-6">
+            <h2 class="mb-5 text-lg font-bold text-gray-900">Category & Pricing</h2>
+
+            <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              <BaseSelect label="Category" v-model="form.category_id" placeholder="Select category" :options="categories.map(category => ({
+                label: category.name,
+                id: category.id
+              }))" :required="true" :error="errors.category_id" />
+
+              <BaseSelect label="Subcategory" v-model="form.subcategory_id" placeholder="Select subcategory" :options="subcategories.map(children => ({
+                label: children.name,
+                id: children.id
+              }))" :error="errors.subcategory_id" />
+
+              <BaseSelect label="Course Level" v-model="form.level" placeholder="Course level" :options="[
+                { label: 'All', id: 'all', },
+                { label: 'Beginner', id: 'beginner', },
+                { label: 'Intermediate', id: 'intermediate', },
+                { label: 'Advanced', id: 'advanced', },
+              ]" :required="true" :error="errors.level" />
+
+              <BaseInput label="Base Price" v-model="form.base_price" placeholder="Enter base price" :required="true"
+                :error="errors.base_price" />
+
+              <BaseInput label="Price" v-model="form.price" placeholder="Enter price" :required="true"
+                :error="errors.price" />
+
+              <BaseInput label="Access Days" v-model="form.access_days" placeholder="Enter access days" :required="true"
+                :error="errors.access_days" />
+            </div>
+          </section>
+        </div>
+
+        <aside class="space-y-6 xl:sticky xl:top-6 xl:h-max">
+          <ListCard title="What will students learn?" v-model="newLearning" :items="form.learnings"
+            placeholder="Add learning & press Enter" @add="addLearning" @remove="removeLearning" />
+
+          <ListCard title="Requirements" v-model="newRequirement" :items="form.requirements"
+            placeholder="Add requirement & press Enter" @add="addRequirement" @remove="removeRequirement" />
+
+          <ListCard title="Includes" v-model="newInclude" :items="form.includes" placeholder="Add include & press Enter"
+            @add="addInclude" @remove="removeInclude" />
+
+          <div class="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+            <BaseButton :loading="courseStore.loading" type="submit" class="w-full">
+              Save Changes
+            </BaseButton>
           </div>
-        </form>
-      </div>
+        </aside>
+      </form>
     </div>
   </Default>
 </template>
+
+<style scoped></style>

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
-import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 
 export const useSectionStore = defineStore('section', {
   state: () => ({
@@ -14,7 +13,7 @@ export const useSectionStore = defineStore('section', {
   actions: {
     async index(course) {
       try {
-        const response = await axiosInstance.get(`/api/v1/course/${course}/sections`)
+        const response = await apiClient.get(`/api/v1/courses/${course}/sections`)
         if (response.status === 200) {
           this.sections = response.data
           return Promise.resolve(response.data)
@@ -30,7 +29,7 @@ export const useSectionStore = defineStore('section', {
     async store(course, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(`/api/v1/course/${course}/sections`, formData)
+        const response = await apiClient.post(`/api/v1/courses/${course}/sections`, formData)
         if (response.status === 201) {
           return Promise.resolve(response.data)
         }
@@ -46,7 +45,7 @@ export const useSectionStore = defineStore('section', {
 
     async show(course, section) {
       try {
-        const response = await axiosInstance.get(`/api/v1/course/${course}/sections/${section}`)
+        const response = await apiClient.get(`/api/v1/courses/${course}/sections/${section}`)
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -61,14 +60,9 @@ export const useSectionStore = defineStore('section', {
     async update(course, section, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(
-          `/api/v1/course/${course}/sections/${section}`,
+        const response = await apiClient.put(
+          `/api/v1/courses/${course}/sections/${section}`,
           formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          },
         )
 
         if (response.status === 200) {
@@ -84,15 +78,11 @@ export const useSectionStore = defineStore('section', {
       }
     },
 
-    async delete(courseId, sectionId) {
+    async delete(course, section) {
       this.loading = true
-      const toastStore = useToastStore()
       try {
-        const response = await axiosInstance.delete(
-          `/api/v1/course/${courseId}/sections/${sectionId}`,
-        )
+        const response = await apiClient.delete(`/api/v1/courses/${course}/sections/${section}`)
         if (response.status === 200) {
-          toastStore.success(response.data.message)
           return Promise.resolve(response.data)
         }
       } catch (error) {

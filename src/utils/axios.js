@@ -1,52 +1,53 @@
-// utils/axios.js
-import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import axios from 'axios'
 
-const axiosInstance = axios.create({
+const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
-    Accept: 'application/json',
+    'Content-type': 'application/json',
+    Author: 'Ashik Ahmed',
   },
+  withCredentials: false,
+  withXSRFToken: false,
 })
 
-// Request Interceptor
-axiosInstance.interceptors.request.use(
+// Request interceptor
+apiClient.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore()
-
-    // Add Bearer token if available
-    if (authStore?.token) {
-      config.headers.Authorization = `Bearer ${authStore.token}`
+    if (authStore.token) {
+      config.headers['Authorization'] = `Bearer ${authStore.token}`
     }
-
     return config
   },
-  (error) => {
-    // Request config error (before sending request)
-    return Promise.reject(error)
-  },
+  (error) => Promise.reject(error),
 )
 
-// Response Interceptor
-axiosInstance.interceptors.response.use(
+// Response interceptor
+apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const authStore = useAuthStore()
+  async (error) => {
+    // If server returned a response (401, 422, 500 etc.)
+    if (error.response) {
+      if (error.response.status === 401) {
+        // Logout user
+        const authStore = useAuthStore()
+        authStore.$reset()
 
-    if (error.response?.status === 401) {
-      // Auto logout & redirect to login page
-      authStore.$reset()
+        // DO NOT return navigateTo — reject error so catch() works
+        window.location.href = '/login'
 
-      // Hard reload for full reset
-      window.location.replace('/login')
+        // send the error to catch()
+        return Promise.reject(error)
+      }
+
+      // For all other errors → pass to catch()
+      return Promise.reject(error)
     }
 
-    // Optional: Global error logging
-    if (error.response?.status >= 500) {
-      console.error('Server error:', error.response.data?.message || error.message)
-    }
+    // If no response (network error etc.)
     return Promise.reject(error)
   },
 )
 
-export default axiosInstance
+export default apiClient

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useUserStore = defineStore('user', {
@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', {
   actions: {
     async all(page = 1, params = {}) {
       try {
-        const response = await axiosInstance.get('/api/v1/users', {
+        const response = await apiClient.get('/api/v1/users', {
           params: {
             page,
             query: params.query || '',
@@ -38,7 +38,7 @@ export const useUserStore = defineStore('user', {
     async store(formData, router) {
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/users', formData)
+        const response = await apiClient.post('/api/v1/users', formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           router.push({ name: 'users' })
@@ -57,7 +57,7 @@ export const useUserStore = defineStore('user', {
     async show(user) {
       this.loading = true
       try {
-        const response = await axiosInstance.get(`/api/v1/users/${user}`)
+        const response = await apiClient.get(`/api/v1/users/${user}`)
         if (response.status === 200) {
           this.user = response.data
           return Promise.resolve(response.data)
@@ -75,7 +75,7 @@ export const useUserStore = defineStore('user', {
     async update(user, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(`/api/v1/users/${user}`, formData, {
+        const response = await apiClient.post(`/api/v1/users/${user}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data', 'X-HTTP-Method-Override': 'PUT' },
         })
         if (response.status === 200) {
@@ -95,7 +95,7 @@ export const useUserStore = defineStore('user', {
     async delete(userId) {
       this.loading = true
       try {
-        const response = await axiosInstance.delete(`/api/v1/users/${userId}`)
+        const response = await apiClient.delete(`/api/v1/users/${userId}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -113,7 +113,7 @@ export const useUserStore = defineStore('user', {
     async search(params = {}) {
       this.loading = true
       try {
-        const response = await axiosInstance.get(`/api/v1/users/search`, {
+        const response = await apiClient.get(`/api/v1/users/search`, {
           params: params,
         })
         if (response.status === 200) {
@@ -133,7 +133,7 @@ export const useUserStore = defineStore('user', {
     async makeInstructor(user, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(`/api/v1/users/${user}/make-instructor`, formData)
+        const response = await apiClient.post(`/api/v1/users/${user}/make-instructor`, formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response)

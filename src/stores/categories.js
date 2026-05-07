@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 
 const toastStore = useToastStore()
 
@@ -17,7 +17,7 @@ export const useCategoryStore = defineStore('category', {
   actions: {
     async all(page) {
       try {
-        const response = await axiosInstance.get('/api/v1/categories', {
+        const response = await apiClient.get('/api/v1/categories', {
           params: {
             page: page,
           },
@@ -37,7 +37,7 @@ export const useCategoryStore = defineStore('category', {
     async store(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/categories', formData)
+        const response = await apiClient.post('/api/v1/categories', formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -52,10 +52,10 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    async show(categoryId) {
+    async show(category) {
       this.loading = true
       try {
-        const response = await axiosInstance.get(`/api/v1/categories/${categoryId}`)
+        const response = await apiClient.get(`/api/v1/categories/${category}`)
         if (response.status === 200) {
           this.category = response.data
           return Promise.resolve(response.data)
@@ -70,10 +70,10 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    async update(categoryId, formData) {
+    async update(category, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(`/api/v1/categories/${categoryId}`, formData)
+        const response = await apiClient.post(`/api/v1/categories/${category}`, formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -88,10 +88,10 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    async delete(categoryId) {
+    async delete(category) {
       this.loading = true
       try {
-        const response = await axiosInstance.delete(`/api/v1/categories/${categoryId}`)
+        const response = await apiClient.delete(`/api/v1/categories/${category}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -108,7 +108,7 @@ export const useCategoryStore = defineStore('category', {
 
     async search() {
       try {
-        const response = await axiosInstance.get('/api/v1/categories/search')
+        const response = await apiClient.get('/api/v1/categories/search')
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }
@@ -120,9 +120,9 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    async courses(categoryId) {
+    async courses(category) {
       try {
-        const response = await axiosInstance.get(`/api/v1/categories/${categoryId}/courses`)
+        const response = await apiClient.get(`/api/v1/categories/${category}/courses`)
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }

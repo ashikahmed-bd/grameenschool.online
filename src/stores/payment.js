@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const usePaymentStore = defineStore('payment', {
@@ -15,7 +15,7 @@ export const usePaymentStore = defineStore('payment', {
   actions: {
     async getGateways() {
       try {
-        const response = await axiosInstance.get('/api/v1/settings/payment-gateways')
+        const response = await apiClient.get('/api/v1/settings/payment-gateways')
         if (response.status === 200) {
           this.gateways = response.data
           return Promise.resolve(response.data)
@@ -31,7 +31,7 @@ export const usePaymentStore = defineStore('payment', {
     async updateGateway(gateway) {
       this.loading = true
       try {
-        const response = await axiosInstance.put(
+        const response = await apiClient.put(
           `/api/v1/settings/payment-gateways/${gateway.id}`,
           gateway,
         )
@@ -49,12 +49,12 @@ export const usePaymentStore = defineStore('payment', {
       }
     },
 
-    async approved(invoiceId) {
+    async approved(invoice) {
       this.loading = true
       try {
-        const response = await axiosInstance.get('/api/v1/payment/approved', {
+        const response = await apiClient.get('/api/v1/payment/approved', {
           params: {
-            invoice_id: invoiceId,
+            invoice_id: invoice,
           },
         })
         if (response.status === 200) {

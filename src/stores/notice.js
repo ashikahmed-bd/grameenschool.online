@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useNoticeStore = defineStore('notice', {
@@ -16,7 +16,7 @@ export const useNoticeStore = defineStore('notice', {
   actions: {
     async all(page) {
       try {
-        const response = await axiosInstance.get('/api/v1/notices', {
+        const response = await apiClient.get('/api/v1/notices', {
           params: {
             page: page,
           },
@@ -36,7 +36,7 @@ export const useNoticeStore = defineStore('notice', {
     async store(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/notices', formData)
+        const response = await apiClient.post('/api/v1/notices', formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -54,7 +54,7 @@ export const useNoticeStore = defineStore('notice', {
     async show(notice) {
       this.loading = true
       try {
-        const response = await axiosInstance.get(`/api/v1/notices/${notice}`)
+        const response = await apiClient.get(`/api/v1/notices/${notice}`)
         if (response.status === 200) {
           this.notice = response.data
           return Promise.resolve(response.data)

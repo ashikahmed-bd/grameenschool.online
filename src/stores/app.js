@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useAppStore = defineStore('app', {
@@ -20,7 +20,7 @@ export const useAppStore = defineStore('app', {
   actions: {
     async dashboard() {
       try {
-        const response = await axiosInstance.get('api/v1/dashboard')
+        const response = await apiClient.get('api/v1/dashboard')
         if (response.status === 200) {
           this.home = response.data
           return Promise.resolve(response.data)
@@ -35,7 +35,7 @@ export const useAppStore = defineStore('app', {
 
     async getSettings() {
       try {
-        const response = await axiosInstance.get('/api/settings')
+        const response = await apiClient.get('/api/settings')
         if (response.status === 200) {
           this.settings = response.data
           return Promise.resolve(response.data)
@@ -50,7 +50,7 @@ export const useAppStore = defineStore('app', {
 
     async ClearAllToken() {
       try {
-        const response = await axiosInstance.delete('api/v1/tokens/flush')
+        const response = await apiClient.delete('api/v1/tokens/flush')
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -64,7 +64,7 @@ export const useAppStore = defineStore('app', {
 
     async cacheClear() {
       try {
-        const response = await axiosInstance.get('api/v1/reboot')
+        const response = await apiClient.get('api/v1/reboot')
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)

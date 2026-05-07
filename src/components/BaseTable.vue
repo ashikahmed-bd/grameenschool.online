@@ -4,7 +4,7 @@
 
 <template>
   <div class="relative overflow-x-auto">
-    <table class=" border-collapse border border-gray-200">
+    <table class=" border-collapse border border-border p-4">
       <slot />
     </table>
   </div>

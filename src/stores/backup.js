@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 
 export const useBackupStore = defineStore('backup', {
   state: () => ({
@@ -15,7 +15,7 @@ export const useBackupStore = defineStore('backup', {
   actions: {
     async all() {
       try {
-        const response = await axiosInstance.get('/api/v1/backup/all')
+        const response = await apiClient.get('/api/v1/backup/all')
         if (response.status === 200) {
           this.backups = response.data
           return response.data
@@ -35,7 +35,7 @@ export const useBackupStore = defineStore('backup', {
       const toastStore = useToastStore()
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/backup/create')
+        const response = await apiClient.post('/api/v1/backup/create')
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -53,7 +53,7 @@ export const useBackupStore = defineStore('backup', {
 
     async download(file) {
       try {
-        const response = await axiosInstance.get(`/api/v1/backup/download/${file}`, {
+        const response = await apiClient.get(`/api/v1/backup/download/${file}`, {
           responseType: 'blob',
         })
 

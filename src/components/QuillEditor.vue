@@ -1,80 +1,160 @@
 <script setup>
-import { ref, onMounted, watch, onBeforeUnmount } from "vue";
-import Quill from "quill";
-import "quill/dist/quill.snow.css"; // Important: must be imported globally or here
+import { ref, onMounted, watch, onBeforeUnmount, nextTick } from 'vue'
+import Quill from 'quill'
+import 'quill/dist/quill.snow.css'
 
 const props = defineProps({
-    modelValue: { type: String, default: "" },
-    label: { type: String, default: "" },
-    placeholder: { type: String, default: "Write something..." },
-    readOnly: { type: Boolean, default: false },
-    height: { type: Number, default: 200 },
-});
+  modelValue: {
+    type: String,
+    default: '',
+  },
+  label: {
+    type: String,
+    default: '',
+  },
+  placeholder: {
+    type: String,
+    default: 'Write something...',
+  },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
+  required: {
+    type: Boolean,
+    default: false,
+  },
+  height: {
+    type: Number,
+    default: 260,
+  },
+  error: {
+    type: [String, Array],
+    default: '',
+  },
+  help: {
+    type: String,
+    default: '',
+  },
+})
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(['update:modelValue', 'change'])
 
-const editorContainer = ref(null);
-let quill = null;
+const editorRef = ref(null)
+let quill = null
 
-onMounted(() => {
-    quill = new Quill(editorContainer.value, {
-        theme: "snow",
-        placeholder: props.placeholder,
-        readOnly: props.readOnly,
-        modules: {
-            toolbar: [
-                [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                ["bold", "italic", "underline", "strike"],
-                [{ color: [] }, { background: [] }],
-                [{ script: "sub" }, { script: "super" }],
-                [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
-                [{ indent: "-1" }, { indent: "+1" }],
-                [{ align: [] }],
-                ["blockquote", "code-block"],
-                ["link", "image", "video"],
-                ["clean"],
-            ],
-        },
-    });
+const toolbarOptions = [
+  [{ header: [2, 3, 4, false] }],
+  ['bold', 'italic', 'underline', 'strike'],
+  [{ color: [] }, { background: [] }],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  [{ align: [] }],
+  ['blockquote', 'code-block'],
+  ['link', 'image', 'video'],
+  ['clean'],
+]
 
-    // Set editor height
-    const editorEl = editorContainer.value.querySelector(".ql-editor");
-    if (editorEl) {
-        editorEl.style.minHeight = `${props.height}px`;
-    }
+const normalizeHtml = (html) => {
+  if (!html || html === '<p><br></p>') return ''
+  return html
+}
 
-    // Initialize editor content
-    quill.root.innerHTML = props.modelValue || "";
+onMounted(async () => {
+  await nextTick()
 
-    // Emit on change
-    quill.on("text-change", () => {
-        const html = quill.root.innerHTML;
-        emit("update:modelValue", html);
-    });
-});
+  quill = new Quill(editorRef.value, {
+    theme: 'snow',
+    placeholder: props.placeholder,
+    readOnly: props.readOnly,
+    modules: {
+      toolbar: toolbarOptions,
+    },
+  })
 
-// Watch external model changes
+  const editor = editorRef.value.querySelector('.ql-editor')
+  if (editor) {
+    editor.style.minHeight = `${props.height}px`
+  }
+
+  quill.root.innerHTML = props.modelValue || ''
+
+  quill.on('text-change', () => {
+    const html = normalizeHtml(quill.root.innerHTML)
+
+    emit('update:modelValue', html)
+    emit('change', html)
+  })
+})
+
 watch(
-    () => props.modelValue,
-    (newVal) => {
-        if (quill && newVal !== quill.root.innerHTML) {
-            quill.root.innerHTML = newVal || "";
-        }
+  () => props.modelValue,
+  (value) => {
+    if (!quill) return
+
+    const current = normalizeHtml(quill.root.innerHTML)
+    const incoming = value || ''
+
+    if (incoming !== current) {
+      const selection = quill.getSelection()
+      quill.root.innerHTML = incoming
+
+      if (selection) {
+        quill.setSelection(selection.index, selection.length)
+      }
     }
-);
+  },
+)
+
+watch(
+  () => props.readOnly,
+  (value) => {
+    if (quill) {
+      quill.enable(!value)
+    }
+  },
+)
 
 onBeforeUnmount(() => {
-    quill = null;
-});
+  quill = null
+})
 </script>
 
 <template>
-    <div class="mb-3">
-        <label v-if="label" class="block text-sm font-medium mb-2">{{ label }}</label>
-        <div ref="editorContainer" class="border border-gray-300 rounded-md"></div>
+  <div class="space-y-2">
+    <label v-if="label" class="block text-sm font-semibold text-gray-800">
+      {{ label }}
+      <span v-if="required" class="text-red-500">*</span>
+    </label>
+
+    <div
+      class="quill-wrapper overflow-hidden rounded-2xl border bg-white transition"
+      :class="[
+        error
+          ? 'border-red-300 ring-2 ring-red-50'
+          : 'border-gray-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10',
+        readOnly ? 'opacity-70' : '',
+      ]"
+    >
+      <div ref="editorRef"></div>
     </div>
+
+    <p v-if="error" class="text-sm text-red-500">
+      {{ Array.isArray(error) ? error[0] : error }}
+    </p>
+
+    <p v-else-if="help" class="text-sm text-gray-500">
+      {{ help }}
+    </p>
+  </div>
 </template>
 
 <style scoped>
- 
+.quill-wrapper :deep(.ql-toolbar) {
+  border: 0;
+  border-bottom: 1px solid rgb(229 231 235);
+}
+
+.quill-wrapper :deep(.ql-container) {
+  border: 0;
+}
 </style>

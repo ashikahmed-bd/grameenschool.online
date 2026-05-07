@@ -1,27 +1,38 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
-import draggable from 'vuedraggable'
-import CourseLayout from '@/layouts/CourseLayout.vue'
-import BaseLectureItem from '@/components/BaseLectureItem.vue'
-import BaseCourseSection from '@/components/BaseCourseSection.vue'
-import { useCourseStore } from '@/stores/course'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
-const courseStore = useCourseStore()
+import Default from '@/layouts/Default.vue'
+import BaseLectureItem from '@/components/BaseLectureItem.vue'
+import BaseSectionForm from '@/components/BaseSectionForm.vue'
+import BaseSectionItem from '@/components/BaseSectionItem.vue'
+
+import { useCourseStore } from '@/stores/course'
+import { useSectionStore } from '@/stores/section'
+
 const route = useRoute()
+const courseStore = useCourseStore()
+const sectionStore = useSectionStore()
 
-const sections = ref(null)
+const { curriculum } = storeToRefs(courseStore)
 
-const loadCurriculum = () => {
-  courseStore.getCurriculum(route.params.id)
+const createSectionForm = ref(false)
+
+const loadCurriculum = async () => {
+  await courseStore.getCurriculum(route.params.id)
 }
 
-const handleSectionDrag = () => {
-  console.log('Sections reordered:', sections)
+const handleSectionCreated = async () => {
+  createSectionForm.value = false
+  await loadCurriculum()
 }
 
-const handleLectureDrag = (section) => {
-  console.log(`Lectures reordered in section ${section.title}:`, section.lectures)
+const sectionDeleted = async (section) => {
+  if (confirm('Are you sure you want to delete this section?')) {
+    await sectionStore.delete(route.params.id, section.id)
+    await loadCurriculum()
+  }
 }
 
 onMounted(() => {
@@ -30,43 +41,62 @@ onMounted(() => {
 </script>
 
 <template>
-  <CourseLayout>
-    <div class="bg-white border p-4 rounded-2xl">
-      <div class="border-b border-border py-2">
-        <h2 class="text-xl font-semibold">Course Curriculum</h2>
-      </div>
+  <Default>
+    <nav class="flex items-center gap-6">
+      <RouterLink
+        :to="{ name: 'course.basic', params: { id: route.params.id } }"
+        class="bg-white flex items-center gap-3 px-4 py-2 rounded hover:text-primary-800 transition"
+        active-class="text-primary font-medium"
+      >
+        <span>Information</span>
+      </RouterLink>
 
+      <RouterLink
+        :to="{ name: 'course.curriculum', params: { id: route.params.id } }"
+        class="bg-white flex items-center gap-3 px-4 py-2 rounded hover:text-primary-800 transition"
+        active-class="text-primary font-medium"
+      >
+        <span>Curriculum</span>
+      </RouterLink>
+    </nav>
+
+    <div class="rounded-2xl bg-white p-4">
       <div class="space-y-4">
-        <draggable
-          group="sections"
-          item-key="id"
-          ghost-class="bg-gray-800"
-          class="space-y-4"
-          :list="sections"
-          handle=".section-title"
-          @change="handleSectionDrag"
+        <BaseSectionItem
+          v-for="section in curriculum?.data"
+          :key="section.id"
+          :section="section"
+          @deleted="sectionDeleted"
+          @reloaded="loadCurriculum"
         >
-          <template #item="{ element: section, index }">
-            <BaseCourseSection :section="section">
-              <draggable
-                group="lectures"
-                itemKey="id"
-                ghost-class="dragged-ghost"
-                class="space-y-4"
-                :list="section.lectures"
-                handle=".drag-handle"
-                @change="handleLectureDrag"
-              >
-                <template #item="{ element: lecture }">
-                  <BaseLectureItem :lecture="lecture" />
-                </template>
-              </draggable>
-            </BaseCourseSection>
-          </template>
-        </draggable>
+          <div class="space-y-3">
+            <BaseLectureItem
+              v-for="lecture in section.lectures"
+              :key="lecture.id"
+              :lecture="lecture"
+              @updated="loadCurriculum"
+              @deleted="loadCurriculum"
+            />
+          </div>
+        </BaseSectionItem>
+
+        <div v-if="!createSectionForm">
+          <button
+            @click="createSectionForm = true"
+            class="rounded bg-black px-4 py-2 text-xs text-white hover:bg-gray-800"
+          >
+            Create Section
+          </button>
+        </div>
+
+        <BaseSectionForm
+          v-else
+          @created="handleSectionCreated"
+          @cancel="createSectionForm = false"
+        />
       </div>
     </div>
-  </CourseLayout>
+  </Default>
 </template>
 
 <style scoped></style>

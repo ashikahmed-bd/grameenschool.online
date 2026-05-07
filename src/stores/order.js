@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useOrderStore = defineStore('order', {
@@ -16,7 +16,7 @@ export const useOrderStore = defineStore('order', {
   actions: {
     async all(page) {
       try {
-        const response = await axiosInstance.get('/api/v1/orders', {
+        const response = await apiClient.get('/api/v1/orders', {
           params: {
             page: page,
           },
@@ -36,7 +36,7 @@ export const useOrderStore = defineStore('order', {
     async store(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/orders', formData)
+        const response = await apiClient.post('/api/v1/orders', formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -51,10 +51,10 @@ export const useOrderStore = defineStore('order', {
       }
     },
 
-    async show(id) {
+    async show(order) {
       this.loading = true
       try {
-        const response = await axiosInstance.get(`/api/v1/orders/${id}`)
+        const response = await apiClient.get(`/api/v1/orders/${order}`)
         if (response.status === 200) {
           this.order = response.data.data
           return Promise.resolve(response.data)
@@ -69,10 +69,10 @@ export const useOrderStore = defineStore('order', {
       }
     },
 
-    async update(userId, formData) {
+    async update(order, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.put(`/api/v1/orders/${userId}`, formData)
+        const response = await apiClient.put(`/api/v1/orders/${order}`, formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -87,10 +87,10 @@ export const useOrderStore = defineStore('order', {
       }
     },
 
-    async delete(userId) {
+    async delete(order) {
       this.loading = true
       try {
-        const response = await axiosInstance.delete(`/api/v1/orders/${userId}`)
+        const response = await apiClient.delete(`/api/v1/orders/${order}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)

@@ -12,7 +12,6 @@ import { useReferralStore } from '@/stores/referral'
 import BaseTextarea from '@/components/BaseTextarea.vue'
 
 const route = useRoute()
-const referralStore = useReferralStore()
 const userStore = useUserStore()
 const { errors } = storeToRefs(userStore)
 

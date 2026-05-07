@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useBenefitStore = defineStore('benefit', {
@@ -16,7 +16,7 @@ export const useBenefitStore = defineStore('benefit', {
   actions: {
     async all(page) {
       try {
-        const response = await axiosInstance.get('/api/v1/benefits', {
+        const response = await apiClient.get('/api/v1/benefits', {
           params: {
             page: page,
           },
@@ -36,7 +36,7 @@ export const useBenefitStore = defineStore('benefit', {
     async store(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/benefit', formData)
+        const response = await apiClient.post('/api/v1/benefit', formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -54,7 +54,7 @@ export const useBenefitStore = defineStore('benefit', {
     async show(benefit) {
       this.loading = true
       try {
-        const response = await axiosInstance.get(`/api/v1/benefit/${benefit}`)
+        const response = await apiClient.get(`/api/v1/benefit/${benefit}`)
         if (response.status === 200) {
           this.benefit = response.data
           return Promise.resolve(response.data)
@@ -72,7 +72,7 @@ export const useBenefitStore = defineStore('benefit', {
     async update(benefit, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(`/api/v1/benefit/${benefit}`, formData)
+        const response = await apiClient.post(`/api/v1/benefit/${benefit}`, formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -89,7 +89,7 @@ export const useBenefitStore = defineStore('benefit', {
 
     async delete(benefit) {
       try {
-        const response = await axiosInstance.delete(`/api/v1/benefit/${benefit}`)
+        const response = await apiClient.delete(`/api/v1/benefit/${benefit}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
-import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 
 export const useLectureStore = defineStore('lecture', {
   state: () => ({
@@ -11,11 +10,11 @@ export const useLectureStore = defineStore('lecture', {
   getters: {},
 
   actions: {
-    async store(courseId, sectionId, formData) {
+    async store(course, section, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(
-          `/api/v1/course/${courseId}/sections/${sectionId}/lectures`,
+        const response = await apiClient.post(
+          `/api/v1/courses/${course}/sections/${section}/lectures`,
           formData,
         )
         if (response.status === 201) {
@@ -34,8 +33,8 @@ export const useLectureStore = defineStore('lecture', {
     async update(course, lecture, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.put(
-          `/api/v1/course/${course}/lectures/${lecture}`,
+        const response = await apiClient.put(
+          `/api/v1/courses/${course}/lectures/${lecture}`,
           formData,
         )
         if (response.status === 200) {
@@ -53,11 +52,49 @@ export const useLectureStore = defineStore('lecture', {
 
     async delete(course, lecture) {
       this.loading = true
-      const toastStore = useToastStore()
       try {
-        const response = await axiosInstance.delete(`/api/v1/course/${course}/lectures/${lecture}`)
+        const response = await apiClient.delete(`/api/v1/courses/${course}/lectures/${lecture}`)
         if (response.status === 200) {
-          toastStore.success(response.data.message)
+          return Promise.resolve(response.data)
+        }
+      } catch (error) {
+        if (error.response) {
+          this.errors = error.response.data.errors
+          return Promise.reject(error.response.data)
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async article(course, lecture, formData) {
+      this.loading = true
+      try {
+        const response = await apiClient.put(
+          `/api/v1/courses/${course}/lectures/${lecture}/article`,
+          formData,
+        )
+        if (response.status === 200) {
+          return Promise.resolve(response.data)
+        }
+      } catch (error) {
+        if (error.response) {
+          this.errors = error.response.data.errors
+          return Promise.reject(error.response.data)
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async video(course, lecture, formData) {
+      this.loading = true
+      try {
+        const response = await apiClient.post(
+          `/api/v1/courses/${course}/lectures/${lecture}/video`,
+          formData,
+        )
+        if (response.status === 200) {
           return Promise.resolve(response.data)
         }
       } catch (error) {

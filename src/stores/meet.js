@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 
 const toastStore = useToastStore()
 
@@ -16,7 +16,7 @@ export const useMeetStore = defineStore('meet', {
   actions: {
     async all(page) {
       try {
-        const response = await axiosInstance.get('/api/v1/meets', {
+        const response = await apiClient.get('/api/v1/meets', {
           params: {
             page: page,
           },
@@ -36,7 +36,7 @@ export const useMeetStore = defineStore('meet', {
     async store(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post(`/api/v1/meets`, formData)
+        const response = await apiClient.post(`/api/v1/meets`, formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -53,7 +53,7 @@ export const useMeetStore = defineStore('meet', {
 
     async show(meet) {
       try {
-        const response = await axiosInstance.get(`/api/v1/meets/${meet}`)
+        const response = await apiClient.get(`/api/v1/meets/${meet}`)
         if (response.status === 200) {
           this.meet = response.data.data
           return Promise.resolve(response.data)
@@ -69,7 +69,7 @@ export const useMeetStore = defineStore('meet', {
     async update(meet, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.put(`/api/v1/meets/${meet}`, formData)
+        const response = await apiClient.put(`/api/v1/meets/${meet}`, formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -87,7 +87,7 @@ export const useMeetStore = defineStore('meet', {
     async delete(meet) {
       this.loading = true
       try {
-        const response = await axiosInstance.delete(`/api/v1/meets/${meet}`)
+        const response = await apiClient.delete(`/api/v1/meets/${meet}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -105,7 +105,7 @@ export const useMeetStore = defineStore('meet', {
     async join(meet) {
       this.loading = true
       try {
-        const response = await axiosInstance.put(`/api/v1/meets/${meet}/join`)
+        const response = await apiClient.put(`/api/v1/meets/${meet}/join`)
         if (response.status === 200) {
           return Promise.resolve(response.data)
         }

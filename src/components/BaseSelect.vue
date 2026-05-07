@@ -1,58 +1,43 @@
 <script setup>
-import { computed } from 'vue'
-
 const props = defineProps({
-  modelValue: [String, Number],
+  modelValue: {
+    type: [String, Number, Boolean],
+    default: '',
+  },
   label: String,
-  required: { type: Boolean, default: false },
-  id: String,
-  name: String,
+  options: {
+    type: Array,
+    default: () => [],
+  },
   placeholder: String,
-  items: { type: Array, default: () => [] },
   error: [String, Array],
-  disabled: { type: Boolean, default: false },
+  required: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue'])
-
-const computedPlaceholder = computed(() => props.placeholder || `Select ${props.label}`)
 </script>
 
 <template>
   <div class="mb-4">
-    <label v-if="label" :for="id" class="block text-sm font-medium text-gray-700 mb-1">
+    <label v-if="label" class="block text-sm font-medium text-gray-700 mb-1">
       {{ label }}
-      <span v-if="required" class="text-red-500 ml-0.5">*</span>
+      <span v-if="required" class="text-red-500">*</span>
     </label>
 
     <select
-      :id="id"
-      :name="name"
-      :value="modelValue"
-      :disabled="disabled"
-      @change="emit('update:modelValue', $event.target.value)"
-      class="w-full px-4 py-2 text-sm rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="error ? 'border-red-500 ring-red-100' : 'border-gray-300'"
-    >
-      <option disabled value="">{{ computedPlaceholder }}</option>
-      <option v-for="item in items" :key="item.id" :value="item.id">
-        {{ item.name }}
+      class="w-full block px-4 py-2 border border-gray-300 rounded bg-white text-sm text-gray-700 focus:outline-none focus:ring-0 focus:border-primary transition"
+      :value="modelValue" @change="emit('update:modelValue', $event.target.value)">
+      <option value="" disabled="">
+        {{ placeholder }}
+      </option>
+
+      <option v-for="option in options" :key="option.id" :value="option.id">
+        {{ option.label }}
       </option>
     </select>
 
-    <p v-if="error" class="text-red-500 text-xs">
-      {{ error[0] }}
+    <p v-if="error" class="text-red-500 text-sm mt-1">
+      {{ error }}
     </p>
   </div>
 </template>
-
-<!-- <BaseSelect
-              label="Category"
-              v-model="form.category"
-              :items="
-                categories.map((category) => ({
-                  id: category.id,
-                  name: category.name,
-                }))
-              "
-            /> -->

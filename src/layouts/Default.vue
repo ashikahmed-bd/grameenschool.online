@@ -54,9 +54,7 @@ onMounted(() => {
 
 <template>
   <div class="h-screen">
-    <!-- Sidebar: Fixed -->
     <aside class="w-60 hidden md:flex flex-col fixed top-0 left-0 bottom-0 z-30 bg-white">
-      <!-- Header Section -->
       <div class="bg-white flex items-center gap-2 px-2 py-3">
         <img v-if="settings.branding" :src="settings.branding?.favicon" class="h-10 w-auto" />
         <div class="">
@@ -65,7 +63,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Scrollable Nav Section -->
       <nav class="bg-white flex-1 overflow-y-auto scrollbar px-2 py-4 space-y-2">
         <RouterLink :to="{ name: 'home' }" class="nav__item">
           <IconHome class="size-5" />
@@ -85,15 +82,11 @@ onMounted(() => {
         </RouterLink>
         <RouterLink :to="{ name: 'meets' }" class="nav__item">
           <IconTv class="size-5" />
-          <span class="ml-2">Live Class</span>
+          <span class="ml-2">Meetings</span>
         </RouterLink>
         <RouterLink :to="{ name: 'notices' }" class="nav__item">
           <IconMegaPhone class="size-5" />
           <span class="ml-2">Notices</span>
-        </RouterLink>
-        <RouterLink :to="{ name: 'payouts' }" class="nav__item">
-          <IconPayout class="size-5" />
-          <span class="ml-2">Payouts</span>
         </RouterLink>
 
         <RouterLink :to="{ name: 'orders' }" class="nav__item">
@@ -139,9 +132,7 @@ onMounted(() => {
       </nav>
     </aside>
 
-    <!-- Main Content Wrapper -->
     <div class="flex-1 flex flex-col md:ml-60">
-      <!-- Header: Sticky -->
       <header class="bg-white sticky top-0 z-30 px-4 py-3 flex items-center">
         <div class="flex-grow">
           <div class="flex items-center justify-between">

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import axiosInstance from '@/utils/axios.js'
 import { useToastStore } from '@/stores/toast.js'
+import apiClient from '@/utils/axios.js'
 const toastStore = useToastStore()
 
 export const useReviewStore = defineStore('review', {
@@ -16,7 +16,7 @@ export const useReviewStore = defineStore('review', {
   actions: {
     async all(page) {
       try {
-        const response = await axiosInstance.get('/api/v1/reviews', {
+        const response = await apiClient.get('/api/v1/reviews', {
           params: {
             page: page,
           },
@@ -36,7 +36,7 @@ export const useReviewStore = defineStore('review', {
     async store(formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.post('/api/v1/reviews', formData)
+        const response = await apiClient.post('/api/v1/reviews', formData)
         if (response.status === 201) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -51,10 +51,10 @@ export const useReviewStore = defineStore('review', {
       }
     },
 
-    async show(userId) {
+    async show(review) {
       this.loading = true
       try {
-        const response = await axiosInstance.get(`/api/v1/reviews/${userId}`)
+        const response = await apiClient.get(`/api/v1/reviews/${review}`)
         if (response.status === 200) {
           this.user = response.data
           return Promise.resolve(response.data)
@@ -69,10 +69,10 @@ export const useReviewStore = defineStore('review', {
       }
     },
 
-    async update(userId, formData) {
+    async update(review, formData) {
       this.loading = true
       try {
-        const response = await axiosInstance.put(`/api/v1/reviews/${userId}`, formData)
+        const response = await apiClient.put(`/api/v1/reviews/${review}`, formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
@@ -87,10 +87,10 @@ export const useReviewStore = defineStore('review', {
       }
     },
 
-    async delete(userId) {
+    async delete(review) {
       this.loading = true
       try {
-        const response = await axiosInstance.delete(`/api/v1/reviews/${userId}`)
+        const response = await apiClient.delete(`/api/v1/reviews/${review}`)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)

@@ -9,7 +9,7 @@ const authStore = useAuthStore()
 const { errors } = storeToRefs(authStore)
 
 const form = reactive({
-  phone: '01500000000',
+  phone: '01516598533',
   password: 'password',
 })
 
@@ -44,29 +44,18 @@ const submit = async () => {
 
         <!-- Form -->
         <form @submit.prevent="submit">
-          <BaseInput
-            v-model="form.phone"
-            label="Phone Number"
-            placeholder="Enter your phone"
-            :error="errors.phone"
-          />
+          <BaseInput v-model="form.phone" label="Phone Number" placeholder="Enter your phone" :error="errors.phone" />
 
-          <BaseInput
-            v-model="form.password"
-            label="Password"
-            type="password"
-            placeholder="Enter password"
-            :error="errors.password"
-          />
+          <BaseInput v-model="form.password" label="Password" type="password" placeholder="Enter password"
+            :error="errors.password" />
 
           <div class="flex items-center justify-between mb-6">
             <label class="flex items-center space-x-2">
               <input type="checkbox" class="accent-emerald-500" />
               <span class="text-sm text-gray-600">Remember Me</span>
             </label>
-            <RouterLink :to="{ name: 'forgot' }" class="text-sm text-blue-600 hover:underline"
-              >Forget Password?</RouterLink
-            >
+            <RouterLink :to="{ name: 'forgot' }" class="text-sm text-blue-600 hover:underline">Forget Password?
+            </RouterLink>
           </div>
 
           <BaseButton :loading="authStore.loading" class="w-full">Submit</BaseButton>

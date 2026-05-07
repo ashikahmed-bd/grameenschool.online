@@ -1,22 +1,22 @@
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue'
 
 const props = defineProps({
   modelValue: {
     type: String,
-    default: "",
+    default: '',
   },
   label: {
     type: String,
-    default: "",
+    default: '',
   },
   placeholder: {
     type: String,
-    default: "",
+    default: '',
   },
   rows: {
     type: Number,
-    default: 3,
+    default: 4,
   },
   readonly: {
     type: Boolean,
@@ -24,16 +24,16 @@ const props = defineProps({
   },
   error: {
     type: String,
-    default: "",
+    default: '',
   },
-});
+})
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(['update:modelValue'])
 
 const localValue = computed({
   get: () => props.modelValue,
-  set: (val) => emit("update:modelValue", val),
-});
+  set: (val) => emit('update:modelValue', val),
+})
 </script>
 
 <template>
@@ -41,8 +41,13 @@ const localValue = computed({
     <label v-if="label" class="form__label">
       {{ label }}
     </label>
-    <textarea v-model="localValue" :placeholder="placeholder || `Enter ${label}`" :rows="rows" :readonly="readonly"
-      class="form__control resize-y"></textarea>
+    <textarea
+      v-model="localValue"
+      :placeholder="placeholder || `Enter ${label}`"
+      :rows="rows"
+      :readonly="readonly"
+      class="form__control resize-y"
+    ></textarea>
     <small v-if="error" class="text-xs text-red-500">
       {{ error }}
     </small>

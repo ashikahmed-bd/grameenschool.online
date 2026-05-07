@@ -66,15 +66,6 @@ const router = createRouter({
       },
     },
 
-    {
-      path: '/course/:id/targets',
-      name: 'course.targets',
-      component: () => import('../views/courses/targets.vue'),
-      meta: {
-        title: 'Course Targets',
-        auth: true,
-      },
-    },
 
     {
       path: '/course/:id/curriculum',
@@ -86,15 +77,6 @@ const router = createRouter({
       },
     },
 
-    {
-      path: '/course/:id/pricing',
-      name: 'course.pricing',
-      component: () => import('../views/courses/pricing.vue'),
-      meta: {
-        title: 'Course Pricing',
-        auth: true,
-      },
-    },
 
     {
       path: '/collections',
@@ -165,15 +147,6 @@ const router = createRouter({
       },
     },
 
-    {
-      path: '/google/callback',
-      name: 'google.callback',
-      component: () => import('../views/google/callback.vue'),
-      meta: {
-        title: 'Google Callback',
-        auth: true,
-      },
-    },
 
     {
       path: '/notices',
@@ -194,25 +167,6 @@ const router = createRouter({
       },
     },
 
-    {
-      path: '/payouts',
-      name: 'payouts',
-      component: () => import('../views/payouts/index.vue'),
-      meta: {
-        title: 'Payouts',
-        auth: true,
-      },
-    },
-
-    {
-      path: '/payouts/:id/update',
-      name: 'payouts.update',
-      component: () => import('../views/payouts/update.vue'),
-      meta: {
-        title: 'Payout Update',
-        auth: true,
-      },
-    },
 
     {
       path: '/orders',
@@ -220,6 +174,16 @@ const router = createRouter({
       component: () => import('../views/orders/index.vue'),
       meta: {
         title: 'Orders',
+        auth: true,
+      },
+    },
+
+    {
+      path: '/orders/create',
+      name: 'orders.create',
+      component: () => import('../views/orders/create.vue'),
+      meta: {
+        title: 'Orders create',
         auth: true,
       },
     },
@@ -284,27 +248,7 @@ const router = createRouter({
       },
     },
 
-    {
-      path: '/users/:id/referral-apply',
-      name: 'users.referral_apply',
-      component: () => import('../views/users/referral.vue'),
-      meta: {
-        title: 'Referral Apply',
-        auth: true,
-      },
-    },
 
-    {
-      path: '/users/:id/make-instructor',
-      name: 'users.make_instructor',
-      component: () => import('../views/users/make_instructor.vue'),
-      meta: {
-        title: 'Make Referral',
-        auth: true,
-      },
-    },
-
-    // benefits route
     {
       path: '/benefits',
       name: 'benefits',
