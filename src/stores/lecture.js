@@ -90,7 +90,7 @@ export const useLectureStore = defineStore('lecture', {
     async video(course, lecture, formData) {
       this.loading = true
       try {
-        const response = await apiClient.post(
+        const response = await apiClient.put(
           `/api/v1/courses/${course}/lectures/${lecture}/video`,
           formData,
         )

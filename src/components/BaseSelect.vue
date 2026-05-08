@@ -32,7 +32,7 @@ const emit = defineEmits(['update:modelValue'])
       </option>
 
       <option v-for="option in options" :key="option.id" :value="option.id">
-        {{ option.label }}
+        {{ option.name }}
       </option>
     </select>
 

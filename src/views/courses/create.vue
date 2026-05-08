@@ -41,9 +41,35 @@ const form = reactive({
   access_days: '',
 
   status: 'draft',
-  learnings: [],
-  requirements: [],
-  includes: [],
+  learnings: [
+    'স্কুল ও বোর্ড পরীক্ষার প্রস্তুতি নিতে পারবে',
+    'বিষয়ভিত্তিক গুরুত্বপূর্ণ টপিক সহজভাবে বুঝতে পারবে',
+    'প্র্যাকটিসের মাধ্যমে দক্ষতা বৃদ্ধি পাবে',
+    'সমস্যা সমাধানের কৌশল শিখতে পারবে',
+    'পরীক্ষায় ভালো ফলাফলের জন্য আত্মবিশ্বাস তৈরি হবে',
+    'বাস্তব উদাহরণের মাধ্যমে শেখার সুযোগ পাবে',
+    'নিয়মিত কুইজ ও অ্যাসাইনমেন্টের মাধ্যমে নিজেকে যাচাই করতে পারবে',
+  ],
+
+  requirements: [
+    'নিয়মিত অনুশীলনের মানসিকতা',
+    'ইন্টারনেট সংযোগ',
+    'খাতা ও কলম',
+    'মোবাইল বা কম্পিউটার ডিভাইস',
+    'শেখার আগ্রহ',
+  ],
+
+  includes: [
+    'সম্পূর্ণ ভিডিও ক্লাস',
+    'PDF নোট ও স্টাডি ম্যাটেরিয়াল',
+    'Practice Exercise',
+    'মডেল টেস্ট',
+    'অ্যাসাইনমেন্ট সাপোর্ট',
+    'পরীক্ষার প্রস্তুতি গাইড',
+    'লাইফটাইম এক্সেস',
+    'কুইজ ও মূল্যায়ন',
+    'রেকর্ডেড ক্লাস সুবিধা',
+  ],
 })
 
 const loadCategories = async () => {
@@ -161,20 +187,20 @@ onMounted(() => {
 
             <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               <BaseSelect label="Category" v-model="form.category_id" placeholder="Select category" :options="categories.map(category => ({
-                label: category.name,
+                name: category.name,
                 id: category.id
               }))" :required="true" :error="errors.category_id" />
 
               <BaseSelect label="Subcategory" v-model="form.subcategory_id" placeholder="Select subcategory" :options="subcategories.map(children => ({
-                label: children.name,
+                name: children.name,
                 id: children.id
               }))" :error="errors.subcategory_id" />
 
               <BaseSelect label="Course Level" v-model="form.level" placeholder="Course level" :options="[
-                { label: 'All', id: 'all', },
-                { label: 'Beginner', id: 'beginner', },
-                { label: 'Intermediate', id: 'intermediate', },
-                { label: 'Advanced', id: 'advanced', },
+                { name: 'All', id: 'all', },
+                { name: 'Beginner', id: 'beginner', },
+                { name: 'Intermediate', id: 'intermediate', },
+                { name: 'Advanced', id: 'advanced', },
               ]" :required="true" :error="errors.level" />
 
               <BaseInput label="Base Price" v-model="form.base_price" placeholder="Enter base price" :required="true"
