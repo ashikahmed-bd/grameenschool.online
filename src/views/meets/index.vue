@@ -7,15 +7,16 @@ import { useMeetStore } from "@/stores/meet.js";
 import { useCourseStore } from "@/stores/course.js";
 import { useUserStore } from "@/stores/user.js";
 import BaseButton from "@/components/BaseButton.vue";
-import axiosInstance from "@/utils/axios";
-import { useAuthStore } from "@/stores/auth";
+import IconDelete from "@/components/icons/IconDelete.vue";
+import IconLink from "@/components/icons/IconLink.vue";
+import IconBroadcast from "@/components/icons/IconBroadcast.vue";
 
-const authStore = useAuthStore();
 const meetStore = useMeetStore();
 const courseStore = useCourseStore();
 const userStore = useUserStore();
-const { meets } = storeToRefs(meetStore);
-const { errors } = storeToRefs(meetStore);
+const { meets, errors } = storeToRefs(meetStore);
+const { courses } = storeToRefs(courseStore);
+const { users } = storeToRefs(userStore);
 
 const loadMeets = async (page = 1) => {
   await meetStore.all(page);
@@ -36,14 +37,10 @@ const deleteMeet = async (meet) => {
   await loadMeets();
 }
 
-const courses = ref([]);
-const users = ref([]);
-
 const form = reactive({
   topic: '',
-  start_date: '',
-  start_time: '',
-  duration: '',
+  date: '',
+  time: '',
   course_id: '',
   host_id: '',
   provider: '',
@@ -56,22 +53,15 @@ const submit = async () => {
 }
 
 const loadCourses = async () => {
-  const response = await courseStore.search('');
-  courses.value = response.data;
+  await courseStore.search('');
 }
 
 const loadUsers = async () => {
-  const response = await userStore.search({
+  await userStore.search({
     role: 'instructor',
   });
-  users.value = response.data;
 }
 
-const loginWithGoogle = async () => {
-  const response = await axiosInstance.get('/api/google/auth');
-  // Redirect user to Google OAuth
-  window.location.href = response.data;
-}
 
 const copied = ref(false);
 
@@ -116,8 +106,8 @@ onMounted(() => {
               <thead>
                 <tr>
                   <th>Topic</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
+                  <th>Date</th>
+                  <th>Time</th>
                   <th>Provider</th>
                   <th>Status</th>
                   <th>Action</th>
@@ -126,8 +116,8 @@ onMounted(() => {
               <tbody>
                 <tr v-for="meet in meets.data">
                   <td>{{ meet.topic }}</td>
-                  <td>{{ meet.start_time_formatted }}</td>
-                  <td>{{ meet.end_time_formatted }}</td>
+                  <td>{{ meet.date_formatted }}</td>
+                  <td>{{ meet.time_formatted }}</td>
                   <td>
                     <span v-if="meet.provider === 'zoom'">Zoom</span>
                     <span v-else-if="meet.provider === 'google_meet'">Google Meet</span>
@@ -137,16 +127,16 @@ onMounted(() => {
                   <td class="text-right">
                     <div class="flex items-center gap-2">
                       <button @click="joinMeet(meet.id)"
-                        class="bg-primary cursor-pointer text-white text-xs px-2 py-1 rounded">
-                        Go Live
+                        class="bg-primary cursor-pointer text-white text-xs p-1 rounded">
+                        <IconBroadcast class="size-4" />
                       </button>
                       <button type="button" @click.prevent="copyClipboard(meet.host_url)"
-                        class="bg-blue-500 cursor-pointer text-white text-xs px-2 py-1 rounded">
-                        Copy link
+                        class="bg-blue-500 cursor-pointer text-white text-xs p-1 rounded">
+                        <IconLink class="size-4" />
                       </button>
                       <button type="button" @click.prevent="deleteMeet(meet.id)"
-                        class="bg-red-500 cursor-pointer text-white text-xs px-2 py-1 rounded">
-                        Delete
+                        class="bg-red-500 cursor-pointer text-white text-xs p-1 rounded">
+                        <IconDelete class="size-4" />
                       </button>
                     </div>
                   </td>
@@ -169,8 +159,6 @@ onMounted(() => {
       <div class="card">
         <div class="card__header">
           <h3 class="card__title">Create Meeting</h3>
-          <button @click="loginWithGoogle" class="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Login with
-            Google</button>
         </div>
 
         <div class="card__body">
@@ -185,34 +173,19 @@ onMounted(() => {
             <div class="grid grid-cols-2 gap-4">
               <div class="form__group">
                 <label class="form__label">Start Date</label>
-                <input type="date" v-model="form.start_date" class="form__control" />
+                <input type="date" v-model="form.date" class="form__control" />
               </div>
               <div class="form__group">
                 <label class="form__label">Start Time</label>
-                <input type="time" v-model="form.start_time" class="form__control" />
+                <input type="time" v-model="form.time" class="form__control" />
               </div>
-            </div>
-
-            <div class="form__group">
-              <label class="form__label">Duration</label>
-              <select v-model="form.duration" class="form__select w-full">
-                <option value="" disabled>Select duration</option>
-                <option value="30">30 Minutes</option>
-                <option value="45">45 Minutes</option>
-                <option value="60">1 Hour</option>
-                <option value="90">1 Hour 30 Minutes</option>
-                <option value="120">2 Hours</option>
-              </select>
-              <small v-if="errors.duration" class="text-danger">
-                {{ errors.duration[0] }}
-              </small>
             </div>
 
             <div class="form__group">
               <label class="form__label">Course</label>
               <select v-model="form.course_id" class="form__select w-full">
                 <option value="">Select course</option>
-                <option :value="course.id" v-for="course in courses" :key="course.id">{{ course.title }}
+                <option :value="course.id" v-for="course in courses.data" :key="course.id">{{ course.title }}
                 </option>
               </select>
               <small v-if="errors.course_id" class="text-danger">{{ errors.course_id[0] }}</small>
@@ -221,7 +194,7 @@ onMounted(() => {
               <label class="form__label">Status</label>
               <select v-model="form.host_id" class="form__select w-full">
                 <option value="">Select User</option>
-                <option :value="user.id" v-for="user in users" :key="user.id">{{ user.name }}</option>
+                <option :value="user.id" v-for="user in users.data" :key="user.id">{{ user.name }}</option>
               </select>
               <small v-if="errors.user_id" class="text-danger">{{ errors.user_id[0] }}</small>
             </div>
@@ -232,7 +205,6 @@ onMounted(() => {
                 <select v-model="form.provider" class="form__select w-full">
                   <option value="" disabled="">Select Provider</option>
                   <option value="zoom">Zoom</option>
-                  <option value="google_meet">Google Meet</option>
                 </select>
               </div>
               <div class="form__group">

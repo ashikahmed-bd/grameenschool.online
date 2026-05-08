@@ -48,7 +48,6 @@ const searchUsers = debounce(async () => {
 const selectUser = (user) => {
     form.user_id = user.id
     search.user = user.phone
-
     selectedUser.value = user;
     showUsers.value = false
 }
@@ -68,7 +67,7 @@ const loadCourses = async () => {
 }
 
 const submit = async () => {
-    console.log(form)
+    await orderStore.store(form);
 }
 
 onMounted(() => {
@@ -198,12 +197,9 @@ onMounted(() => {
                                 </span>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     </Default>
-
 </template>

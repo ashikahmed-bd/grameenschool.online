@@ -49,22 +49,20 @@ export const usePaymentStore = defineStore('payment', {
       }
     },
 
-    async approved(invoice) {
+    async collect(order, formData) {
       this.loading = true
       try {
-        const response = await apiClient.get('/api/v1/payment/approved', {
-          params: {
-            invoice_id: invoice,
-          },
-        })
+        const response = await apiClient.post(`/api/v1/payments/${order}/verify`, formData)
         if (response.status === 200) {
           toastStore.success(response.data.message)
           return Promise.resolve(response.data)
         }
       } catch (error) {
+        console.log(error)
         if (error.response) {
           this.errors = error.response.data.errors
-          return Promise.reject(error.response.data.errors)
+          toastStore.error(error.response.data.message)
+          return null
         }
       } finally {
         this.loading = false

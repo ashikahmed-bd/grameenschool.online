@@ -2,8 +2,8 @@
 import Default from "@/layouts/Default.vue";
 import IconPlus from "@/components/icons/IconPlus.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import {useNoticeStore} from "@/stores/notice.js";
-import {reactive} from "vue";
+import { useNoticeStore } from "@/stores/notice.js";
+import { reactive } from "vue";
 
 const noticeStore = useNoticeStore();
 
@@ -26,7 +26,7 @@ const submit = async () => {
     <div class="card">
       <div class="card__header">
         <h3 class="card__title">Add Notice</h3>
-        <RouterLink :to="{name: 'notices'}" class="base__button" >
+        <RouterLink :to="{ name: 'notices' }" class="base__button">
           All Notices
         </RouterLink>
       </div>
@@ -36,7 +36,7 @@ const submit = async () => {
           <div class="max-w-xl">
             <div class="form__group">
               <label class="form__label">Notice Title</label>
-              <input type="text" v-model="form.title" class="form__control" placeholder="Notice Title"/>
+              <input type="text" v-model="form.title" class="form__control" placeholder="Notice Title" />
             </div>
 
             <div class="form__group">
@@ -57,7 +57,8 @@ const submit = async () => {
                 <label class="form__label">Target</label>
                 <select v-model="form.target" class="form__select w-full">
                   <option value="" disabled>Notice Target</option>
-                  <option value="agent">Agent</option>
+                  <option value="admin">Admin</option>
+                  <option value="author">Author</option>
                   <option value="instructor">Instructor</option>
                   <option value="student">Student</option>
                 </select>
@@ -85,6 +86,4 @@ const submit = async () => {
   </Default>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

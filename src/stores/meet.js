@@ -103,7 +103,6 @@ export const useMeetStore = defineStore('meet', {
     },
 
     async join(meet) {
-      this.loading = true
       try {
         const response = await apiClient.put(`/api/v1/meets/${meet}/join`)
         if (response.status === 200) {
@@ -114,8 +113,6 @@ export const useMeetStore = defineStore('meet', {
           this.errors = error.response.data.errors
           return Promise.reject(error.response.data)
         }
-      } finally {
-        this.loading = false
       }
     },
   },
