@@ -38,6 +38,36 @@ const router = createRouter({
     },
 
     {
+      path: '/categories',
+      name: 'categories',
+      component: () => import('../views/categories/index.vue'),
+      meta: {
+        title: 'Categories',
+        auth: true,
+      },
+    },
+    {
+      path: '/categories/create',
+      name: 'categories.create',
+      component: () => import('../views/categories/create.vue'),
+      meta: {
+        title: 'Create Categories',
+        auth: true,
+      },
+    },
+
+    {
+      path: '/categories/:id',
+      name: 'categories.edit',
+      component: () => import('../views/categories/update.vue'),
+      meta: {
+        title: 'Update Categories',
+        auth: true,
+      },
+    },
+
+
+    {
       path: '/courses',
       name: 'courses',
       component: () => import('../views/courses/index.vue'),
@@ -65,7 +95,6 @@ const router = createRouter({
         auth: true,
       },
     },
-
 
     {
       path: '/course/:id/curriculum',
@@ -108,34 +137,49 @@ const router = createRouter({
       },
     },
 
+
     {
-      path: '/categories',
-      name: 'categories',
-      component: () => import('../views/categories/index.vue'),
+      path: '/benefits', name: 'benefits', component: () => import('../views/benefits/index.vue'),
       meta: {
-        title: 'Categories',
-        auth: true,
-      },
-    },
-    {
-      path: '/categories/create',
-      name: 'categories.create',
-      component: () => import('../views/categories/create.vue'),
-      meta: {
-        title: 'Create Categories',
+        title: 'Benefits',
         auth: true,
       },
     },
 
     {
-      path: '/categories/:id',
-      name: 'categories.edit',
-      component: () => import('../views/categories/update.vue'),
+      path: '/benefit/create', name: 'benefit.create', component: () => import('../views/benefits/create.vue'),
       meta: {
-        title: 'Update Categories',
+        title: 'Add Benefit',
         auth: true,
       },
     },
+
+    {
+      path: '/benefit/:id/edit', name: 'benefit.edit', component: () => import('../views/benefits/update.vue'),
+      meta: {
+        title: 'Update Benefit',
+        auth: true,
+      },
+    },
+
+
+    // Coupons
+
+    {
+      path: '/coupons', name: 'coupons', component: () => import('../views/coupons/index.vue'),
+      meta: {
+        title: 'Manage Coupons',
+        auth: true,
+      },
+    },
+    {
+      path: '/coupons/create', name: 'coupon.create', component: () => import('../views/coupons/create.vue'),
+      meta: {
+        title: 'create Coupons',
+        auth: true,
+      },
+    },
+
 
     {
       path: '/meets',
@@ -249,35 +293,7 @@ const router = createRouter({
     },
 
 
-    {
-      path: '/benefits',
-      name: 'benefits',
-      component: () => import('../views/benefits/index.vue'),
-      meta: {
-        title: 'Benefits',
-        auth: true,
-      },
-    },
 
-    {
-      path: '/benefit/create',
-      name: 'benefit.create',
-      component: () => import('../views/benefits/create.vue'),
-      meta: {
-        title: 'Add Benefit',
-        auth: true,
-      },
-    },
-
-    {
-      path: '/benefit/:id/edit',
-      name: 'benefit.edit',
-      component: () => import('../views/benefits/update.vue'),
-      meta: {
-        title: 'Update Benefit',
-        auth: true,
-      },
-    },
 
     // contacts route
     {

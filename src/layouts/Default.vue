@@ -68,63 +68,83 @@ onMounted(() => {
           <IconHome class="size-5" />
           <span class="ml-3">Dashboard</span>
         </RouterLink>
+
         <RouterLink :to="{ name: 'categories' }" class="nav__item">
           <IconList class="size-5" />
           <span class="ml-3">Categories</span>
         </RouterLink>
+
         <RouterLink :to="{ name: 'courses' }" class="nav__item">
           <IconFlim class="size-5" />
           <span class="ml-3">Courses</span>
         </RouterLink>
+
         <RouterLink :to="{ name: 'collections' }" class="nav__item">
           <IconBundle class="size-5" />
           <span class="ml-3">Collections</span>
         </RouterLink>
-        <RouterLink :to="{ name: 'meets' }" class="nav__item">
-          <IconTv class="size-5" />
-          <span class="ml-2">Meetings</span>
+
+        <RouterLink :to="{ name: 'benefits' }" class="nav__item">
+          <IconGift class="size-5" />
+          <span class="ml-2">Benefits</span>
         </RouterLink>
-        <RouterLink :to="{ name: 'notices' }" class="nav__item">
-          <IconMegaPhone class="size-5" />
-          <span class="ml-2">Notices</span>
+
+        <RouterLink :to="{ name: 'coupons' }" class="nav__item">
+          <IconBundle class="size-5" />
+          <span class="ml-3">Coupons</span>
         </RouterLink>
 
         <RouterLink :to="{ name: 'orders' }" class="nav__item">
           <IconDocument class="size-5" />
           <span class="ml-2">Orders</span>
         </RouterLink>
+
         <RouterLink :to="{ name: 'reviews' }" class="nav__item">
           <IconStar class="size-5" />
           <span class="ml-2">Reviews</span>
         </RouterLink>
-        <RouterLink :to="{ name: 'users' }" class="nav__item">
-          <IconGroup class="size-5" />
-          <span class="ml-2">Users</span>
+
+        <RouterLink :to="{ name: 'meets' }" class="nav__item">
+          <IconTv class="size-5" />
+          <span class="ml-2">Meetings</span>
         </RouterLink>
-        <RouterLink :to="{ name: 'benefits' }" class="nav__item">
-          <IconGift class="size-5" />
-          <span class="ml-2">Benefits</span>
+
+        <RouterLink :to="{ name: 'notices' }" class="nav__item">
+          <IconMegaPhone class="size-5" />
+          <span class="ml-2">Notices</span>
         </RouterLink>
+
         <RouterLink :to="{ name: 'contacts' }" class="nav__item">
           <IconContact class="size-5" />
           <span class="ml-2">Contacts</span>
         </RouterLink>
+
+        <RouterLink :to="{ name: 'users' }" class="nav__item">
+          <IconGroup class="size-5" />
+          <span class="ml-2">Users</span>
+        </RouterLink>
+
         <RouterLink :to="{ name: 'profile' }" class="nav__item">
           <IconProfile class="size-5" />
           <span class="ml-2">Profile</span>
         </RouterLink>
+
+
         <RouterLink :to="{ name: 'settings' }" class="nav__item">
           <IconSettings class="size-5" />
           <span class="ml-2">Settings</span>
         </RouterLink>
+
         <RouterLink :to="{ name: 'website' }" class="nav__item">
           <IconSettings class="size-5" />
           <span class="ml-2">Website Settings</span>
         </RouterLink>
+
         <button type="button" @click="cacheClear()" class="nav__item w-full">
           <IconServer class="size-5" />
           <span class="ml-2">Cache Clear</span>
         </button>
+
         <button type="button" @click="logout" class="nav__item w-full">
           <IconPower class="size-5" />
           <span class="ml-2">Logout</span>
@@ -137,10 +157,8 @@ onMounted(() => {
         <div class="flex-grow">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
-              <button
-                type="button"
-                class="bg-gray-100 p-2 rounded-full cursor-pointer hover:opacity-70 transition duration-200"
-              >
+              <button type="button"
+                class="bg-gray-100 p-2 rounded-full cursor-pointer hover:opacity-70 transition duration-200">
                 <IconBar class="size-6" />
               </button>
               <input type="search" class="form__control max-w-md" placeholder="Enter keywords..." />
