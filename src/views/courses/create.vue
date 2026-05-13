@@ -7,12 +7,14 @@ import ListCard from '@/components/ListCard.vue'
 import QuillEditor from '@/components/QuillEditor.vue'
 import Default from '@/layouts/Default.vue'
 import { useCategoryStore } from '@/stores/categories'
+import { useCollectionStore } from '@/stores/collection'
 import { useCourseStore } from '@/stores/course'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, reactive, ref } from 'vue'
 
 const categoryStore = useCategoryStore();
 const courseStore = useCourseStore();
+const collectionStore = useCollectionStore();
 const { errors } = storeToRefs(courseStore)
 
 const categories = ref([])
@@ -35,7 +37,8 @@ const form = reactive({
   category_id: '',
   subcategory_id: '',
   level: 'all',
-  is_feature: false,
+  is_feature: 0,
+  is_bundle: 0,
   base_price: '',
   price: '',
   access_days: '',
@@ -128,8 +131,13 @@ const removeInclude = (index) => {
   form.includes.splice(index, 1)
 }
 
+const loadCollection = async () => {
+  await collectionStore.all();
+}
+
 onMounted(() => {
   loadCategories();
+  loadCollection();
 })
 </script>
 
@@ -196,6 +204,11 @@ onMounted(() => {
                 id: children.id
               }))" :error="errors.subcategory_id" />
 
+              <BaseSelect label="Collection" v-model="form.collection_id" placeholder="Select collection" :options="collectionStore.collections?.data.map(collection => ({
+                name: collection.title,
+                id: collection.id
+              }))" :error="errors.collection_id" />
+
               <BaseSelect label="Course Level" v-model="form.level" placeholder="Course level" :options="[
                 { name: 'All', id: 'all', },
                 { name: 'Beginner', id: 'beginner', },
@@ -211,6 +224,14 @@ onMounted(() => {
 
               <BaseInput label="Access Days" v-model="form.access_days" placeholder="Enter access days" :required="true"
                 :error="errors.access_days" />
+              <BaseInput label="Intro Video URL" v-model="form.intro_id" placeholder="Enter intro video URL"
+                :required="true" :error="errors.intro_id" />
+
+              <BaseSelect label="Is Bundle" v-model="form.is_bundle" :options="[
+                { name: 'Yes', id: 1 },
+                { name: 'No', id: 0 },
+
+              ]" placeholder="Select option" :required="true" :error="errors.is_bundle" />
             </div>
           </section>
         </div>

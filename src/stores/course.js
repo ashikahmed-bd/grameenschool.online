@@ -142,6 +142,7 @@ export const useCourseStore = defineStore('course', {
     },
 
     async uploadCover(course, formData) {
+      this.loading = true
       try {
         const response = await apiClient.post(`/api/v1/courses/${course}/cover`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -155,6 +156,8 @@ export const useCourseStore = defineStore('course', {
           this.errors = error.response.data.errors
           return Promise.reject(error.response.data)
         }
+      } finally {
+        this.loading = false
       }
     },
 

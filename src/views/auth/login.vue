@@ -9,7 +9,7 @@ const authStore = useAuthStore()
 const { errors } = storeToRefs(authStore)
 
 const form = reactive({
-  phone: '01516598533',
+  phone: '01500000000',
   password: 'password',
 })
 
